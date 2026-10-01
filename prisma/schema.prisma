@@ -1,0 +1,105 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum EventStatus {
+  DRAFT
+  PUBLISHED
+  LIVE
+  ENDED
+}
+
+enum MediaKind {
+  PHOTO
+  CARD
+  VIDEO
+}
+
+enum LiveStreamStatus {
+  OFFLINE
+  LIVE
+  ENDED
+}
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String? // null for accounts created via Google
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  events       Event[]
+}
+
+model Event {
+  id           String      @id @default(cuid())
+  userId       String
+  user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name         String
+  slug         String      @unique
+  type         String // WEDDING | BIRTHDAY | ... (validated with Zod, see src/lib/event-types.ts)
+  hostOne      String? // e.g. bride / celebrant / organiser
+  hostTwo      String? // e.g. groom / partner
+  description  String?
+  eventDate    DateTime    @db.Date
+  startTime    String? // "HH:mm"
+  endTime      String? // "HH:mm"
+  venueName    String?
+  venueAddress String?
+  coverImageUrl String?
+  template     String      @default("elegant")
+  status       EventStatus @default(DRAFT)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  schedule EventSchedule[]
+  stream   LiveStream?
+  media    EventMedia[]
+
+  @@index([userId])
+}
+
+model EventSchedule {
+  id          String   @id @default(cuid())
+  eventId     String
+  event       Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  title       String
+  description String?
+  startTime   String // "HH:mm"
+  endTime     String?
+  createdAt   DateTime @default(now())
+
+  @@index([eventId])
+}
+
+// Metadata only. Video is never stored here. Wired to LiveKit in the next step.
+model LiveStream {
+  id        String           @id @default(cuid())
+  eventId   String           @unique
+  event     Event            @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  roomName  String
+  status    LiveStreamStatus @default(OFFLINE)
+  startedAt DateTime?
+  endedAt   DateTime?
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+}
+
+// Files live in object storage (Cloudflare R2); only metadata is stored here.
+model EventMedia {
+  id        String    @id @default(cuid())
+  eventId   String
+  event     Event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  kind      MediaKind
+  key       String    @unique // object key in the bucket
+  mimeType  String
+  sizeBytes Int
+  createdAt DateTime  @default(now())
+
+  @@index([eventId, kind])
+}
