@@ -7,7 +7,7 @@ const playfair = Playfair_Display({ variable: "--font-playfair", subsets: ["lati
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"),
-  title: "EventLive — beautiful event websites",
+  title: "Eventra — beautiful event websites",
   description: "Create a beautiful website for your wedding, birthday or celebration and share it with your guests.",
 };
 

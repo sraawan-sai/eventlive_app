@@ -14,7 +14,7 @@ export function Logo({ className = "" }: { className?: string }) {
   return (
     <Link href="/" className={`inline-flex items-center gap-2 font-serif text-xl font-bold ${className}`}>
       <LogoMark />
-      EventLive
+      Eventra
     </Link>
   );
 }

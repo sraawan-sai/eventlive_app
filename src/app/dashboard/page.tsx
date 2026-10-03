@@ -6,7 +6,7 @@ import { SiteHeader } from "@/components/site-header";
 import { ButtonLink } from "@/components/ui";
 import { DashboardEvents, type DashboardEvent } from "@/components/dashboard-events";
 
-export const metadata = { title: "Dashboard — EventLive" };
+export const metadata = { title: "Dashboard — Eventra" };
 
 export default async function DashboardPage() {
   const user = await requireUser();

@@ -9,7 +9,7 @@ import { MediaManager } from "@/components/event/media-manager";
 import { publicUrlFor, storageConfig } from "@/lib/storage";
 import type { MediaKindName } from "@/lib/media";
 
-export const metadata = { title: "Edit event — EventLive" };
+export const metadata = { title: "Edit event — Eventra" };
 
 export default async function EditEventPage({ params }: PageProps<"/dashboard/events/[id]">) {
   const { id } = await params;

@@ -6,7 +6,7 @@ import { ButtonLink, Card } from "@/components/ui";
 import { SiteHeader } from "@/components/site-header";
 import { Broadcaster } from "@/components/live/broadcaster";
 
-export const metadata = { title: "Broadcast — EventLive" };
+export const metadata = { title: "Broadcast — Eventra" };
 
 type Props = PageProps<"/event/[slug]/live">;
 

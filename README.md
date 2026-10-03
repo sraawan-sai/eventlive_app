@@ -1,4 +1,4 @@
-# EventLive (Phase 1 — website)
+# Eventra (Phase 1 — website)
 
 Create event websites (weddings, birthdays, celebrations…) and share them with guests.
 Built with Next.js 16 (App Router), TypeScript, Tailwind 4, PostgreSQL, Prisma 7, Auth.js v5, Zod.

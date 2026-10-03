@@ -137,7 +137,7 @@ export function EventSite({ event }: { event: SiteEvent }) {
       </section>
 
       <footer className={`py-8 text-center text-xs ${t.muted}`}>
-        Made with <Link href="/" className="underline">EventLive</Link>
+        Made with <Link href="/" className="underline">Eventra</Link>
       </footer>
     </div>
   );

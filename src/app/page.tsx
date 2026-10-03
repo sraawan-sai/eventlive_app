@@ -100,7 +100,7 @@ export default function Home() {
           </div>
         </section>
       </main>
-      <footer className="border-t border-black/5 py-6 text-center text-sm text-foreground/50">© EventLive</footer>
+      <footer className="border-t border-black/5 py-6 text-center text-sm text-foreground/50">© Eventra</footer>
     </>
   );
 }

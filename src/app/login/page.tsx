@@ -3,7 +3,7 @@ import { auth } from "@/lib/auth";
 import { loginAction, googleSignInAction } from "@/lib/actions/auth";
 import { AuthForm } from "@/components/auth-form";
 
-export const metadata = { title: "Log in — EventLive" };
+export const metadata = { title: "Log in — Eventra" };
 
 export default async function LoginPage() {
   if ((await auth())?.user) redirect("/dashboard");
