@@ -36,12 +36,14 @@ function Section({
   items,
   setItems,
   enabled,
+  label,
 }: {
   eventId: string;
   kind: MediaKindName;
   items: MediaItem[];
   setItems: (fn: (prev: MediaItem[]) => MediaItem[]) => void;
   enabled: boolean;
+  label?: string;
 }) {
   const rule = MEDIA_RULES[kind];
   const input = useRef<HTMLInputElement>(null);
@@ -97,7 +99,7 @@ function Section({
     <Card>
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h2 className="font-semibold">{rule.label}</h2>
+          <h2 className="font-semibold">{label ?? rule.label}</h2>
           <p className="text-xs text-foreground/60">{rule.hint}</p>
         </div>
         <Button
@@ -167,7 +169,7 @@ function Section({
   );
 }
 
-export function MediaManager({ eventId, initial, configured }: { eventId: string; initial: MediaItem[]; configured: boolean }) {
+export function MediaManager({ eventId, initial, configured, cardLabel }: { eventId: string; initial: MediaItem[]; configured: boolean; cardLabel: string }) {
   const [items, setItems] = useState(initial);
   return (
     <div className="space-y-6">
@@ -177,7 +179,7 @@ export function MediaManager({ eventId, initial, configured }: { eventId: string
         </p>
       )}
       {MEDIA_KINDS.map((k) => (
-        <Section key={k} eventId={eventId} kind={k} items={items} setItems={setItems} enabled={configured} />
+        <Section key={k} eventId={eventId} kind={k} items={items} setItems={setItems} enabled={configured} label={k === "CARD" ? cardLabel : undefined} />
       ))}
     </div>
   );

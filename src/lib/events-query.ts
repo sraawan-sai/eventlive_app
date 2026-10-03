@@ -1,4 +1,5 @@
 import { db } from "@/lib/db";
+import { supportsSponsors } from "@/lib/event-types";
 import { toDateInput } from "@/lib/format";
 import { publicUrlFor } from "@/lib/storage";
 import type { SiteEvent } from "@/types/event";
@@ -37,7 +38,7 @@ export async function getSiteEventBySlug(slug: string) {
       mimeType: m.mimeType,
       sizeBytes: m.sizeBytes,
     })),
-    sponsors: e.sponsors.map((s) => ({
+    sponsors: (supportsSponsors(e.type) ? e.sponsors : []).map((s) => ({
       id: s.id,
       name: s.name,
       tier: s.tier,

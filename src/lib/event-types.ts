@@ -139,3 +139,9 @@ const COVER_BY_TYPE: Record<EventType, string> = {
 export function defaultCover(type: string): string {
   return `/images/cover-${COVER_BY_TYPE[type as EventType] ?? "celebration"}.svg`;
 }
+
+/** Sponsors suit public/community events; personal events (wedding, birthday…) show the invitation card instead. */
+const SPONSOR_TYPES: readonly string[] = ["RELIGIOUS", "CORPORATE", "CONCERT", "OTHER"];
+export const supportsSponsors = (type: string) => SPONSOR_TYPES.includes(type);
+
+export const cardLabel = (type: string) => (type === "WEDDING" ? "Wedding card" : "Invitation card");

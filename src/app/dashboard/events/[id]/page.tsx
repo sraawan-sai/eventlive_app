@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { requireUser } from "@/lib/session";
 import { toDateInput } from "@/lib/format";
-import type { EventType } from "@/lib/event-types";
+import { cardLabel, supportsSponsors, type EventType } from "@/lib/event-types";
 import { SiteHeader } from "@/components/site-header";
 import { EditEventForm } from "@/components/event/edit-form";
 import { QrCard } from "@/components/event/qr-card";
@@ -51,6 +51,7 @@ export default async function EditEventPage({ params }: PageProps<"/dashboard/ev
           <p className="mb-4 text-sm text-foreground/60">Shown on your public event website. Uploads save immediately.</p>
           <MediaManager
             eventId={e.id}
+            cardLabel={cardLabel(e.type)}
             configured={!!storageConfig()}
             initial={e.media.map((m) => ({
               id: m.id,
@@ -64,6 +65,7 @@ export default async function EditEventPage({ params }: PageProps<"/dashboard/ev
         <section className="mt-10">
           <QrCard slug={e.slug} name={e.name} />
         </section>
+        {supportsSponsors(e.type) && (
         <section className="mt-10">
           <SponsorManager
             eventId={e.id}
@@ -78,6 +80,7 @@ export default async function EditEventPage({ params }: PageProps<"/dashboard/ev
             }))}
           />
         </section>
+        )}
       </main>
     </>
   );

@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { db } from "@/lib/db";
+import { supportsSponsors } from "@/lib/event-types";
 import { SPONSOR_RULE } from "@/lib/media";
 import { requireUser } from "@/lib/session";
 import { deleteObjects, objectSize, publicUrlFor } from "@/lib/storage";
@@ -34,7 +35,7 @@ export type SponsorItem = {
 export type SponsorResult = { ok: true; sponsor: SponsorItem } | { ok: false; error: string };
 
 async function ownedEvent(eventId: string, userId: string) {
-  const e = await db.event.findUnique({ where: { id: eventId }, select: { userId: true, slug: true } });
+  const e = await db.event.findUnique({ where: { id: eventId }, select: { userId: true, slug: true, type: true } });
   return e && e.userId === userId ? e : null;
 }
 
@@ -46,6 +47,7 @@ export async function addSponsorAction(input: unknown): Promise<SponsorResult> {
 
   const event = await ownedEvent(d.eventId, user.id);
   if (!event) return { ok: false, error: "Event not found." };
+  if (!supportsSponsors(event.type)) return { ok: false, error: "Sponsors are not available for this event type." };
   if ((await db.sponsor.count({ where: { eventId: d.eventId } })) >= SPONSOR_RULE.maxCount) {
     return { ok: false, error: `You can add up to ${SPONSOR_RULE.maxCount} sponsors.` };
   }
