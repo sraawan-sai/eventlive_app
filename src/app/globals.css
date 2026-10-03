@@ -16,8 +16,8 @@
   --color-brand-dark: var(--brand-dark);
   --color-gold: var(--gold);
   --color-tint: var(--tint);
-  --font-sans: var(--font-inter), system-ui, sans-serif;
-  --font-serif: var(--font-playfair), Georgia, serif;
+  --font-sans: var(--font-inter), var(--font-telugu), var(--font-deva), system-ui, sans-serif;
+  --font-serif: var(--font-playfair), var(--font-telugu), var(--font-deva), Georgia, serif;
 }
 
 body {

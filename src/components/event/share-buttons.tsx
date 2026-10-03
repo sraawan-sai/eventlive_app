@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useSyncExternalStore } from "react";
+import { useLang } from "./lang";
 
 export function shareMessage(name: string, url: string) {
   return `❤️ Join us for ${name}!\n\nWatch and celebrate with us:\n${url}`;
@@ -9,6 +10,7 @@ export function shareMessage(name: string, url: string) {
 const noop = () => () => {};
 
 export function ShareButtons({ name, slug, className }: { name: string; slug: string; className: string }) {
+  const { tr } = useLang();
   const [copied, setCopied] = useState(false);
   const canShare = useSyncExternalStore(noop, () => typeof navigator.share === "function", () => false);
   // origin is only known in the browser; falls back to a relative path during SSR
@@ -30,7 +32,7 @@ export function ShareButtons({ name, slug, className }: { name: string; slug: st
   return (
     <div className="flex flex-wrap justify-center gap-3">
       <button type="button" onClick={copy} className={btn}>
-        {copied ? "✓ Copied" : "Copy Link"}
+        {copied ? tr("copied") : tr("copyLink")}
       </button>
       <a href={wa} target="_blank" rel="noopener noreferrer" className={btn}>
         WhatsApp
@@ -47,7 +49,7 @@ export function ShareButtons({ name, slug, className }: { name: string; slug: st
           onClick={() => navigator.share({ title: name, text: shareMessage(name, url), url }).catch(() => {})}
           className={btn}
         >
-          Share…
+          {tr("shareMore")}
         </button>
       )}
     </div>

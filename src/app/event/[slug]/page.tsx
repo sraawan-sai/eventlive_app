@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title,
     description: desc,
-    openGraph: { title, description: desc, type: "website", url: `/event/${slug}`, images: data.record.coverImageUrl ? [data.record.coverImageUrl] : [] },
+    openGraph: { title, description: desc, type: "website", url: `/event/${slug}` },
     twitter: { card: "summary_large_image", title, description: desc },
   };
 }

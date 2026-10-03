@@ -102,8 +102,9 @@ export async function deleteEventAction(id: string) {
   const user = await requireUser();
   const files = await db.eventMedia.findMany({ where: { eventId: id, event: { userId: user.id } }, select: { key: true } });
   // deleteMany scoped by userId = ownership check in a single query
+  const logos = await db.sponsor.findMany({ where: { eventId: id, logoKey: { not: null }, event: { userId: user.id } }, select: { logoKey: true } });
   await db.event.deleteMany({ where: { id, userId: user.id } });
-  await deleteObjects(files.map((f) => f.key));
+  await deleteObjects([...files.map((f) => f.key), ...logos.map((l) => l.logoKey!)]);
   revalidatePath("/dashboard");
   redirect("/dashboard");
 }

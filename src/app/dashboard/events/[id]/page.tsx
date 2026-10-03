@@ -5,6 +5,8 @@ import { toDateInput } from "@/lib/format";
 import type { EventType } from "@/lib/event-types";
 import { SiteHeader } from "@/components/site-header";
 import { EditEventForm } from "@/components/event/edit-form";
+import { QrCard } from "@/components/event/qr-card";
+import { SponsorManager } from "@/components/event/sponsor-manager";
 import { MediaManager } from "@/components/event/media-manager";
 import { publicUrlFor, storageConfig } from "@/lib/storage";
 import type { MediaKindName } from "@/lib/media";
@@ -16,7 +18,7 @@ export default async function EditEventPage({ params }: PageProps<"/dashboard/ev
   const user = await requireUser();
   const e = await db.event.findUnique({
     where: { id },
-    include: { schedule: { orderBy: { startTime: "asc" } }, media: { orderBy: { createdAt: "asc" } } },
+    include: { schedule: { orderBy: { startTime: "asc" } }, media: { orderBy: { createdAt: "asc" } }, sponsors: { orderBy: { createdAt: "asc" } } },
   });
   if (!e || e.userId !== user.id) notFound();
 
@@ -56,6 +58,23 @@ export default async function EditEventPage({ params }: PageProps<"/dashboard/ev
               url: publicUrlFor(m.key),
               mimeType: m.mimeType,
               sizeBytes: m.sizeBytes,
+            }))}
+          />
+        </section>
+        <section className="mt-10">
+          <QrCard slug={e.slug} name={e.name} />
+        </section>
+        <section className="mt-10">
+          <SponsorManager
+            eventId={e.id}
+            storageReady={!!storageConfig()}
+            initial={e.sponsors.map((s) => ({
+              id: s.id,
+              name: s.name,
+              tier: s.tier,
+              websiteUrl: s.websiteUrl,
+              logoUrl: s.logoKey ? publicUrlFor(s.logoKey) : null,
+      display: s.display === "photo" ? "photo" : "logo",
             }))}
           />
         </section>

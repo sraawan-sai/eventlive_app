@@ -18,6 +18,7 @@ enum MediaKind {
   PHOTO
   CARD
   VIDEO
+  MUSIC
 }
 
 enum LiveStreamStatus {
@@ -60,6 +61,7 @@ model Event {
   schedule EventSchedule[]
   stream   LiveStream?
   media    EventMedia[]
+  sponsors Sponsor[]
 
   @@index([userId])
 }
@@ -102,4 +104,18 @@ model EventMedia {
   createdAt DateTime  @default(now())
 
   @@index([eventId, kind])
+}
+
+model Sponsor {
+  id         String   @id @default(cuid())
+  eventId    String
+  event      Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  name       String
+  tier       String? // e.g. "Title Sponsor", "Gold"
+  websiteUrl String?
+  logoKey    String? // object key in R2 (optional: a sponsor can be shown by name only)
+  display    String   @default("logo") // "logo" (fit inside card) | "photo" (fill a large card)
+  createdAt  DateTime @default(now())
+
+  @@index([eventId])
 }

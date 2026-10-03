@@ -3,6 +3,7 @@
 import "@livekit/components-styles";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { LiveKitRoom, RoomAudioRenderer, StartAudio, VideoTrack, useConnectionState, useRoomContext, useTracks } from "@livekit/components-react";
+import { useLang } from "@/components/event/lang";
 import { ConnectionQuality, ConnectionState, RoomEvent, Track, type RemoteTrackPublication, type RoomOptions } from "livekit-client";
 
 type Status = "OFFLINE" | "LIVE" | "ENDED";
@@ -24,12 +25,14 @@ function Panel({ title, sub }: { title: string; sub: string }) {
 }
 
 function ReconnectBanner() {
+  const { tr } = useLang();
   const state = useConnectionState();
   if (state !== ConnectionState.Reconnecting) return null;
-  return <p className="mt-2 text-sm font-medium text-amber-600">Connection interrupted. Reconnecting...</p>;
+  return <p className="mt-2 text-sm font-medium text-amber-600">{tr("reconnecting")}</p>;
 }
 
 function QualityNotice() {
+  const { tr } = useLang();
   const room = useRoomContext();
   const [poor, setPoor] = useState(false);
   useEffect(() => {
@@ -42,10 +45,11 @@ function QualityNotice() {
     };
   }, [room]);
   if (!poor) return null;
-  return <p className="mt-2 text-sm font-medium text-amber-600">Slow connection. Video quality is reduced automatically.</p>;
+  return <p className="mt-2 text-sm font-medium text-amber-600">{tr("slowConn")}</p>;
 }
 
 function Stage() {
+  const { tr } = useLang();
   const [audioOnly, setAudioOnly] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const boxRef = useRef<HTMLDivElement>(null);
@@ -97,7 +101,7 @@ function Stage() {
   return (
     <>
       {audioOnly ? (
-        <Panel title="Audio only" sub="Video is paused to save data. You can still hear the broadcast." />
+        <Panel title={tr("audioOnly")} sub={tr("audioOnlyOn")} />
       ) : main ? (
         <div
           ref={boxRef}
@@ -112,27 +116,28 @@ function Stage() {
           <button
             type="button"
             onClick={toggleExpand}
-            aria-label={expanded ? "Exit full screen" : "Full screen"}
+            aria-label={expanded ? tr("close") : tr("fullscreen")}
             className="absolute bottom-3 right-3 rounded-lg bg-black/60 px-3 py-1.5 text-sm font-semibold text-white backdrop-blur hover:bg-black/80"
           >
-            {expanded ? "✕ Close" : "⛶ Full screen"}
+            {expanded ? tr("close") : tr("fullscreen")}
           </button>
         </div>
       ) : (
-        <Panel title="Waiting for the broadcaster's video…" sub="The stream will appear in a moment." />
+        <Panel title={tr("waiting")} sub={tr("waitingSub")} />
       )}
       <button
         type="button"
         onClick={() => setAudioOnly((v) => !v)}
         className="mt-2 text-xs font-semibold underline opacity-70 hover:opacity-100"
       >
-        {audioOnly ? "Turn video back on" : "Slow connection? Audio only"}
+        {audioOnly ? tr("videoBack") : tr("audioOnlyLink")}
       </button>
     </>
   );
 }
 
 export function LiveViewer({ slug, initialStatus }: { slug: string; initialStatus: Status }) {
+  const { tr } = useLang();
   const [status, setStatus] = useState<Status>(initialStatus);
   const [viewers, setViewers] = useState(0);
   const [conn, setConn] = useState<{ token: string; url: string } | null>(null);
@@ -190,27 +195,27 @@ export function LiveViewer({ slug, initialStatus }: { slug: string; initialStatu
     };
   }, [slug, join]);
 
-  if (status === "ENDED") return <Panel title="The live stream has ended." sub="Thank you for being a part of our special day." />;
-  if (status === "OFFLINE") return <Panel title="The live stream has not started yet." sub="Please check back at the event time." />;
+  if (status === "ENDED") return <Panel title={tr("ended")} sub={tr("endedSub")} />;
+  if (status === "OFFLINE") return <Panel title={tr("notStarted")} sub={tr("notStartedSub")} />;
 
   return (
     <div>
       <div className="mb-3 flex items-center justify-between text-sm">
         <span className="font-bold text-red-600">
-          <span className="live-dot">🔴</span> LIVE NOW
+          <span className="live-dot">🔴</span> {tr("liveNow")}
         </span>
-        <span className="opacity-70">{viewers} {viewers === 1 ? "viewer" : "viewers"}</span>
+        <span className="opacity-70">{viewers} {viewers === 1 ? tr("viewer") : tr("viewers")}</span>
       </div>
       {error ? (
         <div className="grid aspect-video place-items-center rounded-2xl bg-neutral-900 p-6 text-center text-white">
           <div>
-            <p className="font-semibold">{error}</p>
+            <p className="font-semibold">{tr("unableConnect")}</p>
             <button
               type="button"
               onClick={() => void join()}
               className="mt-3 rounded-lg bg-white px-4 py-2 text-sm font-semibold text-neutral-900"
             >
-              Try again
+              {tr("tryAgain")}
             </button>
           </div>
         </div>
@@ -237,13 +242,13 @@ export function LiveViewer({ slug, initialStatus }: { slug: string; initialStatu
           <Stage />
           <RoomAudioRenderer />
           <div className="mt-3 flex justify-center">
-            <StartAudio label="🔊 Tap to enable sound" className="rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-white" />
+            <StartAudio label={tr("tapSound")} className="rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-white" />
           </div>
           <ReconnectBanner />
           <QualityNotice />
         </LiveKitRoom>
       ) : (
-        <Panel title="Connecting to the live stream…" sub="Just a moment." />
+        <Panel title={tr("connecting")} sub={tr("connectingSub")} />
       )}
     </div>
   );

@@ -3,16 +3,18 @@
 import { useEffect, useState } from "react";
 import type { TemplateTheme } from "@/lib/templates";
 import type { MediaItem } from "@/lib/media";
+import { useLang } from "./lang";
 
 export function WeddingCard({ card, t }: { card: MediaItem; t: TemplateTheme }) {
+  const { tr } = useLang();
   return (
     <section id="card" className={`scroll-mt-16 ${t.section}`}>
       <div className="mx-auto max-w-md text-center">
-        <h2 className={t.sectionTitle}>Invitation</h2>
+        <h2 className={t.sectionTitle}>{tr("invitation")}</h2>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={card.url} alt="Invitation card" loading="lazy" className="mx-auto w-full rounded-lg shadow-xl" />
         <a href={card.url} download target="_blank" rel="noopener noreferrer" className={`mt-5 inline-flex px-5 py-2.5 ${t.buttonGhost}`}>
-          Download card
+          {tr("downloadCard")}
         </a>
       </div>
     </section>
@@ -20,10 +22,11 @@ export function WeddingCard({ card, t }: { card: MediaItem; t: TemplateTheme }) 
 }
 
 export function VideoSection({ videos, t }: { videos: MediaItem[]; t: TemplateTheme }) {
+  const { tr } = useLang();
   return (
     <section id="videos" className={`scroll-mt-16 ${t.section}`}>
       <div className="mx-auto max-w-3xl">
-        <h2 className={t.sectionTitle}>Video</h2>
+        <h2 className={t.sectionTitle}>{tr("video")}</h2>
         <div className="space-y-6">
           {videos.map((v) => (
             <video
@@ -42,6 +45,7 @@ export function VideoSection({ videos, t }: { videos: MediaItem[]; t: TemplateTh
 }
 
 export function PhotoGallery({ photos, t }: { photos: MediaItem[]; t: TemplateTheme }) {
+  const { tr } = useLang();
   const [open, setOpen] = useState<number | null>(null);
 
   useEffect(() => {
@@ -62,7 +66,7 @@ export function PhotoGallery({ photos, t }: { photos: MediaItem[]; t: TemplateTh
   return (
     <section id="gallery" className={`scroll-mt-16 ${t.section}`}>
       <div className="mx-auto max-w-5xl">
-        <h2 className={t.sectionTitle}>Gallery</h2>
+        <h2 className={t.sectionTitle}>{tr("gallery")}</h2>
         <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3">
           {photos.map((p, i) => (
             <li key={p.id}>

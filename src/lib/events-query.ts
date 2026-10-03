@@ -6,7 +6,7 @@ import type { SiteEvent } from "@/types/event";
 export async function getSiteEventBySlug(slug: string) {
   const e = await db.event.findUnique({
     where: { slug },
-    include: { schedule: { orderBy: { startTime: "asc" } }, stream: true, media: { orderBy: { createdAt: "asc" } } },
+    include: { schedule: { orderBy: { startTime: "asc" } }, stream: true, media: { orderBy: { createdAt: "asc" } }, sponsors: { orderBy: { createdAt: "asc" } } },
   });
   if (!e) return null;
   const site: SiteEvent = {
@@ -36,6 +36,14 @@ export async function getSiteEventBySlug(slug: string) {
       url: publicUrlFor(m.key),
       mimeType: m.mimeType,
       sizeBytes: m.sizeBytes,
+    })),
+    sponsors: e.sponsors.map((s) => ({
+      id: s.id,
+      name: s.name,
+      tier: s.tier,
+      websiteUrl: s.websiteUrl,
+      logoUrl: s.logoKey ? publicUrlFor(s.logoKey) : null,
+      display: s.display === "photo" ? "photo" : "logo",
     })),
     streamStatus: e.stream?.status ?? "OFFLINE",
   };

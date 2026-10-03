@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import { Button, Card } from "@/components/ui";
-import { MEDIA_KINDS, MEDIA_RULES, type MediaItem, type MediaKindName } from "@/lib/media";
+import { MEDIA_KINDS, MEDIA_RULES, SINGLE_KINDS, type MediaItem, type MediaKindName } from "@/lib/media";
 
 interface Upload {
   id: string;
@@ -64,7 +64,7 @@ function Section({
         method: "POST",
         body: JSON.stringify({ eventId, kind, key, contentType: file.type }),
       });
-      setItems((prev) => [...(kind === "CARD" ? prev.filter((p) => p.kind !== "CARD") : prev), media]);
+      setItems((prev) => [...(SINGLE_KINDS.includes(kind) ? prev.filter((p) => p.kind !== kind) : prev), media]);
       setUploads((u) => u.filter((x) => x.id !== id));
     } catch (e) {
       patch(id, { error: e instanceof Error ? e.message : "Upload failed." });
@@ -74,9 +74,9 @@ function Section({
   async function onPick(files: FileList | null) {
     if (!files) return;
     const list = Array.from(files);
-    const room = kind === "CARD" ? 1 : Math.max(0, rule.maxCount - mine.length);
+    const room = SINGLE_KINDS.includes(kind) ? 1 : Math.max(0, rule.maxCount - mine.length);
     for (const f of list.slice(0, room || 0)) await uploadOne(f); // sequential: friendlier on slow connections
-    if (list.length > room && kind !== "CARD") {
+    if (list.length > room && !SINGLE_KINDS.includes(kind)) {
       setUploads((u) => [...u, { id: crypto.randomUUID(), name: "", progress: 0, error: `Only ${rule.maxCount} ${rule.label.toLowerCase()} allowed.` }]);
     }
     if (input.current) input.current.value = "";
@@ -102,26 +102,28 @@ function Section({
         </div>
         <Button
           variant="secondary"
-          disabled={!enabled || uploading || (kind !== "CARD" && mine.length >= rule.maxCount)}
+          disabled={!enabled || uploading || (!SINGLE_KINDS.includes(kind) && mine.length >= rule.maxCount)}
           onClick={() => input.current?.click()}
         >
-          {kind === "CARD" && mine.length ? "Replace" : "+ Upload"}
+          {SINGLE_KINDS.includes(kind) && mine.length ? "Replace" : "+ Upload"}
         </Button>
         <input
           ref={input}
           type="file"
           hidden
-          multiple={kind !== "CARD"}
+          multiple={!SINGLE_KINDS.includes(kind)}
           accept={rule.types.join(",")}
           onChange={(e) => void onPick(e.target.files)}
         />
       </div>
 
       {mine.length > 0 && (
-        <ul className={`mt-4 grid gap-3 ${kind === "VIDEO" ? "sm:grid-cols-2" : "grid-cols-2 sm:grid-cols-4"}`}>
+        <ul className={`mt-4 grid gap-3 ${kind === "VIDEO" ? "sm:grid-cols-2" : kind === "MUSIC" ? "grid-cols-1" : "grid-cols-2 sm:grid-cols-4"}`}>
           {mine.map((m) => (
             <li key={m.id} className="group relative overflow-hidden rounded-xl bg-black/5">
-              {m.kind === "VIDEO" ? (
+              {m.kind === "MUSIC" ? (
+                <audio src={m.url} controls preload="none" className="w-full" />
+              ) : m.kind === "VIDEO" ? (
                 <video src={`${m.url}#t=0.1`} controls preload="metadata" playsInline className="aspect-video w-full bg-black" />
               ) : (
                 // eslint-disable-next-line @next/next/no-img-element

@@ -19,6 +19,7 @@ export function valuesToSiteEvent(v: EventFormValues, slug: string, schedule: Si
     template: v.template,
     schedule,
     media: [],
+    sponsors: [],
     streamStatus: "OFFLINE",
   };
 }

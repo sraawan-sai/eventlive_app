@@ -68,7 +68,7 @@ export function VenueFields({ v, set, errors = {} }: { v: EventFormValues; set: 
       <Field label="Venue address" error={errors.venueAddress?.[0]}>
         <textarea className={`${inputCls} min-h-20`} value={v.venueAddress} onChange={(e) => set("venueAddress", e.target.value)} />
       </Field>
-      <Field label="Cover image URL (optional)" hint="Paste a link to a photo. Image uploads come in a later phase." error={errors.coverImageUrl?.[0]}>
+      <Field label="Cover image URL (optional)" hint="Paste a link to a photo, or leave empty to use the default illustration." error={errors.coverImageUrl?.[0]}>
         <input type="url" className={inputCls} value={v.coverImageUrl} onChange={(e) => set("coverImageUrl", e.target.value)} placeholder="https://…" />
       </Field>
     </div>

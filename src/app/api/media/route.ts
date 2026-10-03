@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { MEDIA_KINDS, MEDIA_RULES } from "@/lib/media";
+import { MEDIA_KINDS, MEDIA_RULES, SINGLE_KINDS } from "@/lib/media";
 import { deleteObjects, objectSize, publicUrlFor, storageConfig } from "@/lib/storage";
 
 const bodySchema = z.object({
@@ -40,12 +40,12 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "File is too large." }, { status: 413 });
   }
 
-  // One wedding card per event: a new one replaces the old one.
+  // One wedding card / one music track per event: a new upload replaces the old one.
   let removed: string[] = [];
-  if (kind === "CARD") {
-    const old = await db.eventMedia.findMany({ where: { eventId, kind: "CARD" }, select: { key: true } });
+  if (SINGLE_KINDS.includes(kind)) {
+    const old = await db.eventMedia.findMany({ where: { eventId, kind }, select: { key: true } });
     removed = old.map((o) => o.key);
-    await db.eventMedia.deleteMany({ where: { eventId, kind: "CARD" } });
+    await db.eventMedia.deleteMany({ where: { eventId, kind } });
   }
   const media = await db.eventMedia.create({ data: { eventId, kind, key, mimeType: contentType, sizeBytes: size } });
   if (removed.length) await deleteObjects(removed);

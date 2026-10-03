@@ -1,6 +1,6 @@
 /** Event dates are stored as calendar dates (UTC midnight); always format in UTC to avoid off-by-one. */
-export function formatDate(d: Date | string): string {
-  return new Date(d).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
+export function formatDate(d: Date | string, locale = "en-GB"): string {
+  return new Date(d).toLocaleDateString(locale, { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
 }
 
 export function formatTime(t?: string | null): string {

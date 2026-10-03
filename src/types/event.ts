@@ -14,5 +14,6 @@ export interface SiteEvent {
   template: string;
   schedule: { id: string; title: string; description: string | null; startTime: string; endTime: string | null }[];
   media: import("@/lib/media").MediaItem[];
+  sponsors: import("@/lib/actions/sponsors").SponsorItem[];
   streamStatus: "OFFLINE" | "LIVE" | "ENDED";
 }

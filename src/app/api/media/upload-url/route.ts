@@ -2,12 +2,12 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { MEDIA_KINDS, MEDIA_RULES, extFor } from "@/lib/media";
+import { MEDIA_KINDS, MEDIA_RULES, SINGLE_KINDS, SPONSOR_RULE, extFor } from "@/lib/media";
 import { presignUpload, storageConfig } from "@/lib/storage";
 
 const bodySchema = z.object({
   eventId: z.string().min(1),
-  kind: z.enum(MEDIA_KINDS),
+  kind: z.enum([...MEDIA_KINDS, "SPONSOR"]),
   contentType: z.string().min(1).max(100),
   size: z.number().int().positive(),
 });
@@ -26,14 +26,18 @@ export async function POST(req: Request) {
   if (!event) return NextResponse.json({ error: "Event not found." }, { status: 404 });
   if (event.userId !== session.user.id) return NextResponse.json({ error: "Forbidden." }, { status: 403 });
 
-  const rule = MEDIA_RULES[kind];
+  const rule = kind === "SPONSOR" ? { ...SPONSOR_RULE, label: "Sponsors" } : MEDIA_RULES[kind];
   if (!rule.types.includes(contentType)) {
     return NextResponse.json({ error: `Unsupported file type. ${rule.hint}` }, { status: 415 });
   }
   if (size > rule.maxBytes) {
     return NextResponse.json({ error: `File is too large. ${rule.hint}` }, { status: 413 });
   }
-  if (kind !== "CARD") {
+  if (kind === "SPONSOR") {
+    if ((await db.sponsor.count({ where: { eventId } })) >= SPONSOR_RULE.maxCount) {
+      return NextResponse.json({ error: `You can add up to ${SPONSOR_RULE.maxCount} sponsors.` }, { status: 409 });
+    }
+  } else if (!SINGLE_KINDS.includes(kind)) {
     const count = await db.eventMedia.count({ where: { eventId, kind } });
     if (count >= rule.maxCount) {
       return NextResponse.json({ error: `You can add up to ${rule.maxCount} ${rule.label.toLowerCase()}.` }, { status: 409 });

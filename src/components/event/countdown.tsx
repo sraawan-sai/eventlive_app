@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useLang } from "./lang";
 
 function parts(target: number, now: number) {
   const s = Math.max(0, Math.floor((target - now) / 1000));
@@ -8,6 +9,7 @@ function parts(target: number, now: number) {
 }
 
 export function Countdown({ date, time, boxClass }: { date: string; time: string | null; boxClass: string }) {
+  const { tr } = useLang();
   const [now, setNow] = useState<number | null>(null);
   useEffect(() => {
     const tick = () => setNow(Date.now());
@@ -22,16 +24,16 @@ export function Countdown({ date, time, boxClass }: { date: string; time: string
 
   if (now === null) return <div className="h-[76px]" aria-hidden />;
   const c = parts(target, now);
-  if (c.over) return <p className="text-lg font-semibold">The celebration has begun! 🎉</p>;
+  if (c.over) return <p className="text-lg font-semibold">{tr("begun")}</p>;
 
   return (
     <div className="flex justify-center gap-2 sm:gap-3" role="timer" aria-label="Countdown to the event">
       {(
         [
-          ["Days", c.d],
-          ["Hours", c.h],
-          ["Mins", c.m],
-          ["Secs", c.s],
+          [tr("days"), c.d],
+          [tr("hours"), c.h],
+          [tr("mins"), c.m],
+          [tr("secs"), c.s],
         ] as const
       ).map(([label, v]) => (
         <div key={label} className={`w-[68px] px-1 py-3 text-center sm:w-20 ${boxClass}`}>
