@@ -2,6 +2,7 @@ import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 import bcrypt from "bcryptjs";
+import { headers } from "next/headers";
 import { db } from "@/lib/db";
 import { loginSchema } from "@/lib/validators";
 
@@ -30,6 +31,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return profile?.email_verified === true && !!profile.email;
     },
     async jwt({ token, user, account, profile }) {
+      // `account` is only set on the request that actually signs the user in.
+      const signedIn = !!account;
       if (account?.provider === "google" && profile?.email) {
         const email = profile.email.toLowerCase();
         const dbUser = await db.user.upsert({
@@ -42,6 +45,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       } else if (user?.id) {
         token.uid = user.id;
       }
+      if (signedIn && token.uid) await recordLogin(token.uid as string, account?.provider === "google" ? "google" : "password");
       return token;
     },
     session({ session, token }) {
@@ -50,3 +54,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
   },
 });
+
+/** Best effort: a logging failure must never block a sign-in. */
+async function recordLogin(userId: string, method: "google" | "password") {
+  try {
+    const ua = (await headers()).get("user-agent")?.slice(0, 300) ?? null;
+    await db.$transaction([
+      db.loginEvent.create({ data: { userId, method, userAgent: ua } }),
+      db.user.update({ where: { id: userId }, data: { lastLoginAt: new Date(), loginCount: { increment: 1 } } }),
+    ]);
+  } catch {
+    /* ignore */
+  }
+}

@@ -1,0 +1,4 @@
+# Caddy gets a free HTTPS certificate automatically. Browsers need wss:// (TLS) when your site is on https.
+{$LIVEKIT_DOMAIN} {
+	reverse_proxy localhost:7880
+}

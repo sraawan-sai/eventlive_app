@@ -1,0 +1,23 @@
+# Self-hosted LiveKit on one server (DigitalOcean Droplet). Run by setup.sh, from this folder.
+# host networking is recommended by LiveKit: WebRTC needs a wide UDP port range.
+services:
+  livekit:
+    image: livekit/livekit-server:latest
+    command: --config /etc/livekit.yaml
+    network_mode: host
+    restart: unless-stopped
+    volumes:
+      - ./livekit.yaml:/etc/livekit.yaml:ro
+
+  caddy:
+    image: caddy:2
+    network_mode: host
+    restart: unless-stopped
+    environment:
+      LIVEKIT_DOMAIN: ${LIVEKIT_DOMAIN}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+
+volumes:
+  caddy_data:

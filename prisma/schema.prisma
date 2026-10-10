@@ -32,9 +32,12 @@ model User {
   name         String
   email        String   @unique
   passwordHash String? // null for accounts created via Google
+  lastLoginAt  DateTime?
+  loginCount   Int      @default(0)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   events       Event[]
+  logins       LoginEvent[]
 }
 
 model Event {
@@ -118,4 +121,17 @@ model Sponsor {
   createdAt  DateTime @default(now())
 
   @@index([eventId])
+}
+
+// One row per successful sign-in. Used by the admin dashboard.
+model LoginEvent {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  method    String // "password" | "google"
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@index([createdAt])
 }

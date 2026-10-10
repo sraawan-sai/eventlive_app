@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import { logoutAction } from "@/lib/actions/auth";
 import { Button, ButtonLink } from "@/components/ui";
 import { Logo } from "@/components/logo";
+import { isAdminEmail } from "@/lib/session";
 
 export async function SiteHeader({ marketing = false }: { marketing?: boolean }) {
   const session = await auth();
@@ -20,6 +21,7 @@ export async function SiteHeader({ marketing = false }: { marketing?: boolean })
         <nav className="flex items-center gap-2">
           {session?.user ? (
             <>
+              {isAdminEmail(session.user.email) && <ButtonLink href="/admin" variant="ghost">Admin</ButtonLink>}
               <ButtonLink href="/dashboard" variant="ghost">Dashboard</ButtonLink>
               <form action={logoutAction}>
                 <Button variant="secondary" type="submit">Log out</Button>
