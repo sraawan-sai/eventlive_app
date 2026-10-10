@@ -25,6 +25,21 @@ if command -v ufw >/dev/null 2>&1; then
   ufw --force enable
 fi
 
+# Oracle Cloud Ubuntu images ship iptables rules that REJECT everything except SSH.
+# Insert ACCEPT rules above that REJECT and save them so they survive a reboot.
+if command -v iptables >/dev/null 2>&1 && iptables -S INPUT 2>/dev/null | grep -q -- "-j REJECT"; then
+  echo "==> Opening ports in iptables (Oracle Cloud style)"
+  for rule in "tcp --dport 80" "tcp --dport 443" "tcp --dport 7881" "udp --dport 50000:51000"; do
+    iptables -C INPUT -p ${rule} -j ACCEPT 2>/dev/null || iptables -I INPUT 5 -p ${rule} -j ACCEPT
+  done
+  if command -v netfilter-persistent >/dev/null 2>&1; then
+    netfilter-persistent save
+  else
+    DEBIAN_FRONTEND=noninteractive apt-get install -y iptables-persistent >/dev/null 2>&1 && netfilter-persistent save || \
+      echo "WARNING: could not persist iptables rules; re-run setup.sh after a reboot."
+  fi
+fi
+
 echo "==> Generating API key and secret"
 API_KEY="API$(openssl rand -hex 6)"
 API_SECRET="$(openssl rand -base64 36 | tr -d '/+=' | cut -c1-40)"
