@@ -21,7 +21,7 @@ export function WeddingCard({ card, t }: { card: MediaItem; t: TemplateTheme }) 
   );
 }
 
-/** Plays at the video's own shape: tall phone videos stay tall, wide videos stay wide (height capped at 80% of the screen). */
+/** Plays at the video's own shape: tall videos stay tall, wide videos stay wide. */
 function AdaptiveVideo({ src }: { src: string }) {
   const [ratio, setRatio] = useState(16 / 9);
   return (
@@ -34,8 +34,9 @@ function AdaptiveVideo({ src }: { src: string }) {
         const { videoWidth: w, videoHeight: h } = e.currentTarget;
         if (w && h) setRatio(w / h);
       }}
-      style={{ aspectRatio: ratio, width: `min(100%, calc(80vh * ${ratio}))` }}
-      className="mx-auto block rounded-2xl bg-black object-contain"
+      // Full page width on phones (tall videos just get taller). On larger screens the width is capped so the height stays under 85% of the screen.
+      style={{ aspectRatio: ratio, "--r": ratio } as React.CSSProperties}
+      className="mx-auto block w-full rounded-2xl bg-black object-contain md:max-w-[calc(85vh*var(--r))]"
     />
   );
 }

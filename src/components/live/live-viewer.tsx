@@ -109,11 +109,11 @@ function Stage() {
         <div
           ref={boxRef}
           onDoubleClick={toggleExpand}
-          style={expanded ? undefined : { aspectRatio: ratio, width: `min(100%, calc(80vh * ${ratio}))` }}
+          style={expanded ? undefined : ({ aspectRatio: ratio, "--r": ratio } as React.CSSProperties)}
           className={
             expanded
               ? "fixed inset-0 z-50 flex items-center justify-center bg-black"
-              : "relative mx-auto overflow-hidden rounded-2xl bg-black"
+              : "relative mx-auto w-full overflow-hidden rounded-2xl bg-black md:max-w-[calc(85vh*var(--r))]"
           }
         >
           <VideoTrack trackRef={main} className="h-full w-full object-contain" />
