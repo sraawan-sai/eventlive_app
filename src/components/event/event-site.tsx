@@ -59,7 +59,8 @@ function Site({ event }: { event: SiteEvent }) {
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={event.coverImageUrl || defaultCover(event.type)} alt="" className="absolute inset-0 h-full w-full object-cover" />
         <div className={`absolute inset-0 ${t.heroOverlay}`} />
-        <div className={`relative z-10 mx-auto max-w-4xl ${t.heroText}`}>
+        {event.coverImageUrl && <div className={`absolute inset-0 ${t.heroDim}`} />}
+        <div className={`relative z-10 mx-auto w-full max-w-4xl break-words ${t.heroText} ${t.heroShadow}`}>
           <p className={t.tagline}>{tagline(event.type, cfg.tagline)}</p>
           <h1 className={`mt-5 ${t.headline}`}>{cfg.headline(one, two, event.name)}</h1>
           <p className={`mt-6 ${t.date}`}>{fmtDate(event.eventDate)}</p>

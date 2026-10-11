@@ -14,6 +14,10 @@ export interface TemplateTheme {
   heroWrap: string;
   heroOverlay: string;
   heroText: string;
+  /** Keeps hero text readable on bright or busy photos. */
+  heroShadow: string;
+  /** Extra dimming layer used only when a custom cover photo is set. */
+  heroDim: string;
   headline: string;
   tagline: string;
   date: string;
@@ -39,6 +43,8 @@ export const TEMPLATES: Record<TemplateId, TemplateTheme> = {
     heroWrap: "min-h-[92svh]",
     heroOverlay: "bg-gradient-to-b from-black/30 via-black/40 to-black/60",
     heroText: "text-white",
+    heroShadow: "[text-shadow:0_2px_14px_rgba(0,0,0,0.6),0_1px_3px_rgba(0,0,0,0.5)]",
+    heroDim: "bg-black/25",
     headline: "font-serif italic text-5xl sm:text-7xl md:text-8xl leading-tight",
     tagline: "font-serif tracking-[0.3em] uppercase text-xs sm:text-sm",
     date: "font-serif text-xl sm:text-2xl tracking-widest",
@@ -61,6 +67,8 @@ export const TEMPLATES: Record<TemplateId, TemplateTheme> = {
     heroWrap: "min-h-[80svh]",
     heroOverlay: "bg-gradient-to-br from-fuchsia-700/35 via-purple-800/40 to-indigo-900/65",
     heroText: "text-white",
+    heroShadow: "[text-shadow:0_2px_14px_rgba(0,0,0,0.6),0_1px_3px_rgba(0,0,0,0.5)]",
+    heroDim: "bg-black/20",
     headline: "font-sans font-extrabold text-4xl sm:text-6xl md:text-7xl leading-tight tracking-tight",
     tagline: "font-sans font-semibold uppercase tracking-widest text-xs sm:text-sm",
     date: "font-sans font-medium text-lg sm:text-xl",
@@ -83,6 +91,8 @@ export const TEMPLATES: Record<TemplateId, TemplateTheme> = {
     heroWrap: "min-h-[85svh]",
     heroOverlay: "bg-gradient-to-b from-[#0f1b2d]/60 via-[#0f1b2d]/50 to-[#0f1b2d]",
     heroText: "text-[#f3ead7]",
+    heroShadow: "[text-shadow:0_2px_14px_rgba(0,0,0,0.6),0_1px_3px_rgba(0,0,0,0.5)]",
+    heroDim: "bg-black/25",
     headline: "font-serif text-5xl sm:text-7xl leading-tight",
     tagline: "font-serif tracking-[0.35em] uppercase text-xs sm:text-sm text-[#d9b96b]",
     date: "font-serif text-xl sm:text-2xl tracking-wider text-[#d9b96b]",
@@ -105,6 +115,8 @@ export const TEMPLATES: Record<TemplateId, TemplateTheme> = {
     heroWrap: "min-h-[70svh]",
     heroOverlay: "bg-white/80",
     heroText: "text-neutral-900",
+    heroShadow: "[text-shadow:0_1px_10px_rgba(255,255,255,0.9)]",
+    heroDim: "bg-white/30",
     headline: "font-sans font-black text-5xl sm:text-7xl md:text-8xl leading-[0.95] tracking-tighter uppercase",
     tagline: "font-sans text-xs uppercase tracking-[0.4em]",
     date: "font-sans text-base sm:text-lg tracking-wide",
