@@ -4,6 +4,7 @@ import "@livekit/components-styles";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { LiveKitRoom, RoomAudioRenderer, StartAudio, VideoTrack, useConnectionState, useRoomContext, useTracks } from "@livekit/components-react";
 import { useLang } from "@/components/event/lang";
+import { TickerBar } from "./ticker-bar";
 import { ConnectionQuality, ConnectionState, RoomEvent, Track, type RemoteTrackPublication, type RoomOptions } from "livekit-client";
 
 type Status = "OFFLINE" | "LIVE" | "ENDED";
@@ -48,7 +49,7 @@ function QualityNotice() {
   return <p className="mt-2 text-sm font-medium text-amber-600">{tr("slowConn")}</p>;
 }
 
-function Stage() {
+function Stage({ ticker }: { ticker: { on: boolean; text: string } }) {
   const { tr } = useLang();
   const [audioOnly, setAudioOnly] = useState(false);
   const [expanded, setExpanded] = useState(false);
@@ -129,6 +130,7 @@ function Stage() {
       ) : (
         <Panel title={tr("waiting")} sub={tr("waitingSub")} />
       )}
+      {ticker.on && ticker.text && <TickerBar text={ticker.text} />}
       <button
         type="button"
         onClick={() => setAudioOnly((v) => !v)}
@@ -140,10 +142,11 @@ function Stage() {
   );
 }
 
-export function LiveViewer({ slug, initialStatus }: { slug: string; initialStatus: Status }) {
+export function LiveViewer({ slug, initialStatus, initialTicker }: { slug: string; initialStatus: Status; initialTicker: { on: boolean; text: string } }) {
   const { tr } = useLang();
   const [status, setStatus] = useState<Status>(initialStatus);
   const [viewers, setViewers] = useState(0);
+  const [ticker, setTicker] = useState(initialTicker);
   const [conn, setConn] = useState<{ token: string; url: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const connected = useRef(false); // have a token / are joining
@@ -176,9 +179,10 @@ export function LiveViewer({ slug, initialStatus }: { slug: string; initialStatu
       try {
         const r = await fetch(`/api/events/${slug}/status`, { cache: "no-store" });
         if (!r.ok || stop) return;
-        const d = (await r.json()) as { status: Status; viewers: number };
+        const d = (await r.json()) as { status: Status; viewers: number; ticker?: { on: boolean; text: string } };
         setStatus(d.status);
         setViewers(d.viewers);
+        if (d.ticker) setTicker(d.ticker);
         if (d.status === "LIVE") {
           if (!connected.current && !failed.current) void join();
         } else {
@@ -199,8 +203,14 @@ export function LiveViewer({ slug, initialStatus }: { slug: string; initialStatu
     };
   }, [slug, join]);
 
-  if (status === "ENDED") return <Panel title={tr("ended")} sub={tr("endedSub")} />;
-  if (status === "OFFLINE") return <Panel title={tr("notStarted")} sub={tr("notStartedSub")} />;
+  if (status === "ENDED" || status === "OFFLINE") {
+    return (
+      <div>
+        {status === "ENDED" ? <Panel title={tr("ended")} sub={tr("endedSub")} /> : <Panel title={tr("notStarted")} sub={tr("notStartedSub")} />}
+        {ticker.on && ticker.text && <TickerBar text={ticker.text} />}
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -243,7 +253,7 @@ export function LiveViewer({ slug, initialStatus }: { slug: string; initialStatu
           }}
           onMediaDeviceFailure={() => {}}
         >
-          <Stage />
+          <Stage ticker={ticker} />
           <RoomAudioRenderer />
           <div className="mt-3 flex justify-center">
             <StartAudio label={tr("tapSound")} className="rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-white" />

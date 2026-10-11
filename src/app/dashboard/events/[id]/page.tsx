@@ -5,6 +5,7 @@ import { toDateInput } from "@/lib/format";
 import { cardLabel, supportsSponsors, type EventType } from "@/lib/event-types";
 import { SiteHeader } from "@/components/site-header";
 import { EditEventForm } from "@/components/event/edit-form";
+import { TickerControl } from "@/components/live/ticker-control";
 import { QrCard } from "@/components/event/qr-card";
 import { SponsorManager } from "@/components/event/sponsor-manager";
 import { MediaManager } from "@/components/event/media-manager";
@@ -61,6 +62,9 @@ export default async function EditEventPage({ params }: PageProps<"/dashboard/ev
               sizeBytes: m.sizeBytes,
             }))}
           />
+        </section>
+        <section className="mt-10">
+          <TickerControl slug={e.slug} initialText={e.tickerText ?? ""} initialOn={e.tickerOn} />
         </section>
         <section className="mt-10">
           <QrCard slug={e.slug} name={e.name} />

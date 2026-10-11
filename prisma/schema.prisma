@@ -56,6 +56,8 @@ model Event {
   venueName    String?
   venueAddress String?
   coverImageUrl String?
+  tickerText   String? // scrolling message shown over the video
+  tickerOn     Boolean     @default(false)
   template     String      @default("elegant")
   status       EventStatus @default(DRAFT)
   createdAt    DateTime    @default(now())

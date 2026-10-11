@@ -20,6 +20,7 @@ export function valuesToSiteEvent(v: EventFormValues, slug: string, schedule: Si
     schedule,
     media: [],
     sponsors: [],
+    ticker: { on: false, text: "" },
     streamStatus: "OFFLINE",
   };
 }

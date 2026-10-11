@@ -5,6 +5,7 @@ import { livekitConfig } from "@/lib/livekit";
 import { ButtonLink, Card } from "@/components/ui";
 import { SiteHeader } from "@/components/site-header";
 import { Broadcaster } from "@/components/live/broadcaster";
+import { TickerControl } from "@/components/live/ticker-control";
 
 export const metadata = { title: "Broadcast — Eventra" };
 
@@ -14,7 +15,7 @@ type Props = PageProps<"/event/[slug]/live">;
 export default async function BroadcasterPage({ params }: Props) {
   const { slug } = await params;
   const user = await requireUser();
-  const event = await db.event.findUnique({ where: { slug }, select: { name: true, userId: true } });
+  const event = await db.event.findUnique({ where: { slug }, select: { name: true, userId: true, tickerText: true, tickerOn: true } });
   if (!event || event.userId !== user.id) notFound();
 
   return (
@@ -22,7 +23,10 @@ export default async function BroadcasterPage({ params }: Props) {
       <SiteHeader />
       <main className="flex-1 px-4 py-6">
         {livekitConfig() ? (
-          <Broadcaster slug={slug} eventName={event.name} />
+          <div className="mx-auto flex w-full max-w-xl flex-col gap-4">
+            <Broadcaster slug={slug} eventName={event.name} />
+            <TickerControl slug={slug} initialText={event.tickerText ?? ""} initialOn={event.tickerOn} />
+          </div>
         ) : (
           <Card className="mx-auto max-w-xl text-center">
             <h1 className="font-serif text-2xl font-bold">Live streaming isn&apos;t configured</h1>

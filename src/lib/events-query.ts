@@ -46,6 +46,7 @@ export async function getSiteEventBySlug(slug: string) {
       logoUrl: s.logoKey ? publicUrlFor(s.logoKey) : null,
       display: s.display === "photo" ? "photo" : "logo",
     })),
+    ticker: { on: e.tickerOn && !!e.tickerText, text: e.tickerText ?? "" },
     streamStatus: e.stream?.status ?? "OFFLINE",
   };
   return { record: e, site };

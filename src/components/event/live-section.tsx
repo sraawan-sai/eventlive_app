@@ -12,7 +12,7 @@ export function LiveSection({ event, t }: { event: SiteEvent; t: TemplateTheme }
     <section id="live" className={`scroll-mt-16 ${t.section}`}>
       <div className="mx-auto max-w-3xl text-center">
         <h2 className={t.sectionTitle}>{tr("liveStream")}</h2>
-        <LiveViewer slug={event.slug} initialStatus={event.streamStatus} />
+        <LiveViewer slug={event.slug} initialStatus={event.streamStatus} initialTicker={event.ticker} />
       </div>
     </section>
   );

@@ -31,3 +31,12 @@ body {
   50% { opacity: 0.35; }
 }
 .live-dot { animation: livepulse 1.4s ease-in-out infinite; }
+
+@keyframes ticker-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.ticker-track { display: inline-flex; white-space: nowrap; animation: ticker-scroll var(--ticker-dur, 20s) linear infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .ticker-track { animation: none; white-space: normal; }
+}
