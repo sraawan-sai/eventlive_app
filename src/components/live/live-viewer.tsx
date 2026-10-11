@@ -97,6 +97,9 @@ function Stage() {
 
   const playable = all.filter((t) => t.publication?.track);
   const main = playable.find((t) => t.source === Track.Source.ScreenShare) ?? playable[0];
+  // Match the broadcaster's shape: a phone held upright is tall, a laptop or phone held sideways is wide.
+  const dim = main?.publication?.dimensions;
+  const ratio = dim && dim.width && dim.height ? dim.width / dim.height : 16 / 9;
 
   return (
     <>
@@ -106,10 +109,11 @@ function Stage() {
         <div
           ref={boxRef}
           onDoubleClick={toggleExpand}
+          style={expanded ? undefined : { aspectRatio: ratio, width: `min(100%, calc(80vh * ${ratio}))` }}
           className={
             expanded
               ? "fixed inset-0 z-50 flex items-center justify-center bg-black"
-              : "relative aspect-video w-full overflow-hidden rounded-2xl bg-black"
+              : "relative mx-auto overflow-hidden rounded-2xl bg-black"
           }
         >
           <VideoTrack trackRef={main} className="h-full w-full object-contain" />

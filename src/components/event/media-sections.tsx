@@ -21,6 +21,25 @@ export function WeddingCard({ card, t }: { card: MediaItem; t: TemplateTheme }) 
   );
 }
 
+/** Plays at the video's own shape: tall phone videos stay tall, wide videos stay wide (height capped at 80% of the screen). */
+function AdaptiveVideo({ src }: { src: string }) {
+  const [ratio, setRatio] = useState(16 / 9);
+  return (
+    <video
+      src={`${src}#t=0.1`}
+      controls
+      preload="metadata"
+      playsInline
+      onLoadedMetadata={(e) => {
+        const { videoWidth: w, videoHeight: h } = e.currentTarget;
+        if (w && h) setRatio(w / h);
+      }}
+      style={{ aspectRatio: ratio, width: `min(100%, calc(80vh * ${ratio}))` }}
+      className="mx-auto block rounded-2xl bg-black object-contain"
+    />
+  );
+}
+
 export function VideoSection({ videos, t }: { videos: MediaItem[]; t: TemplateTheme }) {
   const { tr } = useLang();
   return (
@@ -29,14 +48,7 @@ export function VideoSection({ videos, t }: { videos: MediaItem[]; t: TemplateTh
         <h2 className={t.sectionTitle}>{tr("video")}</h2>
         <div className="space-y-6">
           {videos.map((v) => (
-            <video
-              key={v.id}
-              src={`${v.url}#t=0.1`}
-              controls
-              preload="metadata"
-              playsInline
-              className="aspect-video w-full rounded-2xl bg-black"
-            />
+            <AdaptiveVideo key={v.id} src={v.url} />
           ))}
         </div>
       </div>
