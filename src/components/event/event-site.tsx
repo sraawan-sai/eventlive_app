@@ -96,12 +96,6 @@ function Site({ event }: { event: SiteEvent }) {
         </section>
       )}
 
-      <LiveSection event={event} t={t} />
-
-      {supportsSponsors(event.type) && event.sponsors.length > 0 && <SponsorsSection sponsors={event.sponsors} t={t} />}
-
-      {videos.length > 0 && <VideoSection videos={videos} t={t} />}
-      {photos.length > 0 && <PhotoGallery photos={photos} t={t} />}
 
       {/* Details */}
       <section id="details" className={t.section}>
@@ -139,16 +133,30 @@ function Site({ event }: { event: SiteEvent }) {
               </div>
             )}
           </div>
-          {(event.venueName || event.venueAddress) && (
+        </div>
+      </section>
+
+      {supportsSponsors(event.type) && event.sponsors.length > 0 && <SponsorsSection sponsors={event.sponsors} t={t} />}
+
+      {videos.length > 0 && <VideoSection videos={videos} t={t} />}
+      {photos.length > 0 && <PhotoGallery photos={photos} t={t} />}
+
+      <LiveSection event={event} t={t} />
+
+      {/* Map */}
+      {(event.venueName || event.venueAddress) && (
+        <section id="map" className={`scroll-mt-16 ${t.section}`}>
+          <div className="mx-auto max-w-3xl">
+            <h2 className={t.sectionTitle}>{tr("map")}</h2>
             <iframe
               title="Venue map"
               loading="lazy"
-              className="mt-6 h-64 w-full rounded-xl border-0"
+              className="h-72 w-full rounded-xl border-0"
               src={`https://www.google.com/maps?q=${encodeURIComponent([event.venueName, event.venueAddress].filter(Boolean).join(", "))}&output=embed`}
             />
-          )}
-        </div>
-      </section>
+          </div>
+        </section>
+      )}
 
       {/* Share */}
       <section id="share" className={t.section}>
