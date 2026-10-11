@@ -98,6 +98,8 @@ function Site({ event }: { event: SiteEvent }) {
 
       <LiveSection event={event} t={t} />
 
+      {supportsSponsors(event.type) && event.sponsors.length > 0 && <SponsorsSection sponsors={event.sponsors} t={t} />}
+
       {videos.length > 0 && <VideoSection videos={videos} t={t} />}
       {photos.length > 0 && <PhotoGallery photos={photos} t={t} />}
 
@@ -147,8 +149,6 @@ function Site({ event }: { event: SiteEvent }) {
           )}
         </div>
       </section>
-
-      {supportsSponsors(event.type) && event.sponsors.length > 0 && <SponsorsSection sponsors={event.sponsors} t={t} />}
 
       {/* Share */}
       <section id="share" className={t.section}>
