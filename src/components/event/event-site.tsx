@@ -72,6 +72,35 @@ function Site({ event }: { event: SiteEvent }) {
         </div>
       </header>
 
+      {card && <WeddingCard card={card} t={t} />}
+
+      {/* Schedule */}
+      {event.schedule.length > 0 && (
+        <section id="schedule" className={t.section}>
+          <div className="mx-auto max-w-2xl">
+            <h2 className={t.sectionTitle}>{tr("schedule")}</h2>
+            <ol className="relative ml-2 border-l-2 border-current/20 pl-6">
+              {event.schedule.map((s) => (
+                <li key={s.id} className="relative pb-8 last:pb-0">
+                  <span className={`absolute -left-[31px] top-1.5 size-3 rounded-full bg-current ring-4 ring-current/20 ${t.accent}`} aria-hidden />
+                  <p className={`text-sm font-semibold ${t.accent}`}>
+                    {formatTime(s.startTime)}
+                    {s.endTime && ` – ${formatTime(s.endTime)}`}
+                  </p>
+                  <p className="text-lg font-semibold">{s.title}</p>
+                  {s.description && <p className={`text-sm ${t.muted}`}>{s.description}</p>}
+                </li>
+              ))}
+            </ol>
+          </div>
+        </section>
+      )}
+
+      <LiveSection event={event} t={t} />
+
+      {videos.length > 0 && <VideoSection videos={videos} t={t} />}
+      {photos.length > 0 && <PhotoGallery photos={photos} t={t} />}
+
       {/* Details */}
       <section id="details" className={t.section}>
         <div className="mx-auto max-w-3xl">
@@ -118,35 +147,6 @@ function Site({ event }: { event: SiteEvent }) {
           )}
         </div>
       </section>
-
-      {card && <WeddingCard card={card} t={t} />}
-
-      {/* Schedule */}
-      {event.schedule.length > 0 && (
-        <section id="schedule" className={t.section}>
-          <div className="mx-auto max-w-2xl">
-            <h2 className={t.sectionTitle}>{tr("schedule")}</h2>
-            <ol className="relative ml-2 border-l-2 border-current/20 pl-6">
-              {event.schedule.map((s) => (
-                <li key={s.id} className="relative pb-8 last:pb-0">
-                  <span className={`absolute -left-[31px] top-1.5 size-3 rounded-full bg-current ring-4 ring-current/20 ${t.accent}`} aria-hidden />
-                  <p className={`text-sm font-semibold ${t.accent}`}>
-                    {formatTime(s.startTime)}
-                    {s.endTime && ` – ${formatTime(s.endTime)}`}
-                  </p>
-                  <p className="text-lg font-semibold">{s.title}</p>
-                  {s.description && <p className={`text-sm ${t.muted}`}>{s.description}</p>}
-                </li>
-              ))}
-            </ol>
-          </div>
-        </section>
-      )}
-
-      <LiveSection event={event} t={t} />
-
-      {videos.length > 0 && <VideoSection videos={videos} t={t} />}
-      {photos.length > 0 && <PhotoGallery photos={photos} t={t} />}
 
       {supportsSponsors(event.type) && event.sponsors.length > 0 && <SponsorsSection sponsors={event.sponsors} t={t} />}
 
