@@ -1,4 +1,5 @@
 import { db } from "@/lib/db";
+import { normalizeTranslations } from "@/lib/translations";
 import { supportsSponsors } from "@/lib/event-types";
 import { toDateInput } from "@/lib/format";
 import { publicUrlFor } from "@/lib/storage";
@@ -47,6 +48,7 @@ export async function getSiteEventBySlug(slug: string) {
       display: s.display === "photo" ? "photo" : "logo",
     })),
     ticker: { on: e.tickerOn && !!e.tickerText, text: e.tickerText ?? "" },
+    translations: normalizeTranslations(e.translations),
     streamStatus: e.stream?.status ?? "OFFLINE",
   };
   return { record: e, site };

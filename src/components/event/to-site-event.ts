@@ -1,5 +1,6 @@
 import { EVENT_TYPE_CONFIG } from "@/lib/event-types";
 import type { EventFormValues } from "./event-fields";
+import { emptyTranslations } from "@/lib/translations";
 import type { SiteEvent } from "@/types/event";
 
 export function valuesToSiteEvent(v: EventFormValues, slug: string, schedule: SiteEvent["schedule"] = []): SiteEvent {
@@ -21,6 +22,7 @@ export function valuesToSiteEvent(v: EventFormValues, slug: string, schedule: Si
     media: [],
     sponsors: [],
     ticker: { on: false, text: "" },
+    translations: v.translations ?? emptyTranslations(),
     streamStatus: "OFFLINE",
   };
 }

@@ -7,6 +7,7 @@ import { requireUser } from "@/lib/session";
 import { uniqueSlug } from "@/lib/slug";
 import { eventSchema, scheduleSchema } from "@/lib/validators";
 import { deleteObjects } from "@/lib/storage";
+import { Prisma } from "@/generated/prisma/client";
 
 export type EventResult =
   | { ok: true; slug: string; id: string }
@@ -26,7 +27,20 @@ function toData(d: ReturnType<typeof eventSchema.parse>) {
     venueAddress: d.venueAddress ?? null,
     coverImageUrl: d.coverImageUrl ?? null,
     template: d.template,
+    translations: cleanTranslations(d.translations),
   };
+}
+
+/** Keep only non-empty translated fields; store NULL when there are none. */
+function cleanTranslations(t: ReturnType<typeof eventSchema.parse>["translations"]) {
+  const out: Record<string, Record<string, string>> = {};
+  for (const lang of ["te", "hi"] as const) {
+    const block = t?.[lang];
+    if (!block) continue;
+    const kept = Object.fromEntries(Object.entries(block).filter(([, v]) => typeof v === "string" && v)) as Record<string, string>;
+    if (Object.keys(kept).length) out[lang] = kept;
+  }
+  return Object.keys(out).length ? (out as Prisma.InputJsonValue) : Prisma.DbNull;
 }
 
 export async function createEventAction(input: unknown): Promise<EventResult> {

@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import { deleteEventAction, updateEventAction } from "@/lib/actions/events";
 import { slugify } from "@/lib/slugify";
 import { Button, ButtonLink, Card, Field, inputCls } from "@/components/ui";
-import { InfoFields, VenueFields, type EventFormValues } from "./event-fields";
+import { InfoFields, TranslationFields, VenueFields, type EventFormValues } from "./event-fields";
 import { TemplatePicker } from "./template-picker";
 
 interface ScheduleRow {
@@ -65,6 +65,10 @@ export function EditEventForm({
       <Card>
         <h2 className="mb-4 font-semibold">Details</h2>
         <InfoFields v={v} set={set} errors={errors} />
+      </Card>
+      <Card>
+        <h2 className="mb-4 font-semibold">Telugu &amp; Hindi text</h2>
+        <TranslationFields v={v} set={set} />
       </Card>
       <Card>
         <h2 className="mb-4 font-semibold">Venue &amp; cover</h2>

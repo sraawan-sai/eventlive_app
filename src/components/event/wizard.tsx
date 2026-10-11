@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState, useTransition } from "react";
 import { createEventAction } from "@/lib/actions/events";
 import { EVENT_TYPES, EVENT_TYPE_CONFIG, type EventType } from "@/lib/event-types";
+import { emptyTranslations } from "@/lib/translations";
 import { slugify } from "@/lib/slugify";
 import { Button, ButtonLink, Card, Field } from "@/components/ui";
 import { InfoFields, VenueFields, type EventFormValues } from "./event-fields";
@@ -27,6 +28,7 @@ const INITIAL: EventFormValues = {
   coverImageUrl: "",
   template: "elegant",
   slug: "",
+  translations: emptyTranslations(),
 };
 
 export function EventWizard() {

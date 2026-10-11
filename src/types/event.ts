@@ -16,5 +16,6 @@ export interface SiteEvent {
   media: import("@/lib/media").MediaItem[];
   sponsors: import("@/lib/actions/sponsors").SponsorItem[];
   ticker: { on: boolean; text: string };
+  translations: import("@/lib/translations").Translations;
   streamStatus: "OFFLINE" | "LIVE" | "ENDED";
 }

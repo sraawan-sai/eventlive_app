@@ -1,5 +1,6 @@
 "use client";
 
+import { TRANSLATION_LANGS, TRANSLATION_LABEL, type Translations, type TransFields } from "@/lib/translations";
 import { EVENT_TYPE_CONFIG, type EventType } from "@/lib/event-types";
 import { Field, inputCls } from "@/components/ui";
 
@@ -17,6 +18,7 @@ export interface EventFormValues {
   coverImageUrl: string;
   template: string;
   slug: string;
+  translations: Translations;
 }
 
 type Errors = Record<string, string[] | undefined>;
@@ -71,6 +73,44 @@ export function VenueFields({ v, set, errors = {} }: { v: EventFormValues; set: 
       <Field label="Cover image URL (optional)" hint="Paste a link to a photo, or leave empty to use the default illustration." error={errors.coverImageUrl?.[0]}>
         <input type="url" className={inputCls} value={v.coverImageUrl} onChange={(e) => set("coverImageUrl", e.target.value)} placeholder="https://…" />
       </Field>
+    </div>
+  );
+}
+
+/** Optional Telugu / Hindi versions of the title, description and names. Guests see them when they pick that language. */
+export function TranslationFields({ v, set }: { v: EventFormValues; set: Set }) {
+  const cfg = EVENT_TYPE_CONFIG[v.type];
+  const update = (lang: (typeof TRANSLATION_LANGS)[number], key: keyof TransFields, val: string) =>
+    set("translations", { ...v.translations, [lang]: { ...v.translations[lang], [key]: val } });
+
+  return (
+    <div className="space-y-6">
+      <p className="text-sm text-foreground/60">
+        Optional. Type the title and description in each language. If a field is left empty, guests who pick that language see the English text.
+      </p>
+      {TRANSLATION_LANGS.map((lang) => (
+        <div key={lang} className="space-y-3 rounded-xl bg-black/[0.03] p-4">
+          <h3 className="font-semibold">{TRANSLATION_LABEL[lang]}</h3>
+          <Field label={`${cfg.nameLabel} (${TRANSLATION_LABEL[lang].split(" ")[0]})`}>
+            <input className={inputCls} value={v.translations[lang].name} maxLength={120} onChange={(e) => update(lang, "name", e.target.value)} lang={lang} />
+          </Field>
+          {cfg.hostOneLabel && (
+            <div className={cfg.hostTwoLabel ? "grid gap-3 sm:grid-cols-2" : ""}>
+              <Field label={cfg.hostOneLabel}>
+                <input className={inputCls} value={v.translations[lang].hostOne} maxLength={80} onChange={(e) => update(lang, "hostOne", e.target.value)} lang={lang} />
+              </Field>
+              {cfg.hostTwoLabel && (
+                <Field label={cfg.hostTwoLabel}>
+                  <input className={inputCls} value={v.translations[lang].hostTwo} maxLength={80} onChange={(e) => update(lang, "hostTwo", e.target.value)} lang={lang} />
+                </Field>
+              )}
+            </div>
+          )}
+          <Field label="Description">
+            <textarea className={`${inputCls} min-h-24`} value={v.translations[lang].description} maxLength={2000} onChange={(e) => update(lang, "description", e.target.value)} lang={lang} />
+          </Field>
+        </div>
+      ))}
     </div>
   );
 }

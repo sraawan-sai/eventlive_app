@@ -6,6 +6,7 @@ import { cardLabel, supportsSponsors, type EventType } from "@/lib/event-types";
 import { SiteHeader } from "@/components/site-header";
 import { EditEventForm } from "@/components/event/edit-form";
 import { TickerControl } from "@/components/live/ticker-control";
+import { normalizeTranslations } from "@/lib/translations";
 import { QrCard } from "@/components/event/qr-card";
 import { SponsorManager } from "@/components/event/sponsor-manager";
 import { MediaManager } from "@/components/event/media-manager";
@@ -44,6 +45,7 @@ export default async function EditEventPage({ params }: PageProps<"/dashboard/ev
             coverImageUrl: e.coverImageUrl ?? "",
             template: e.template,
             slug: e.slug,
+            translations: normalizeTranslations(e.translations),
           }}
           schedule={e.schedule.map((s) => ({ title: s.title, description: s.description ?? "", startTime: s.startTime, endTime: s.endTime ?? "" }))}
         />

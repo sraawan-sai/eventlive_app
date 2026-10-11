@@ -28,8 +28,12 @@ function Site({ event }: { event: SiteEvent }) {
   const fmtDate = (d: string) => formatDate(d, LANG_LOCALE[lang]);
   const t = getTemplate(event.template);
   const cfg = EVENT_TYPE_CONFIG[event.type as EventType] ?? EVENT_TYPE_CONFIG.OTHER;
-  const one = event.hostOne ?? "";
-  const two = event.hostTwo ?? "";
+  // Owner-written Telugu / Hindi versions; any field left empty falls back to the English text.
+  const trans = lang === "en" ? null : event.translations[lang];
+  const name = trans?.name || event.name;
+  const description = trans?.description || event.description;
+  const one = trans?.hostOne || event.hostOne || "";
+  const two = trans?.hostTwo || event.hostTwo || "";
   const card = event.media.find((m) => m.kind === "CARD");
   const photos = event.media.filter((m) => m.kind === "PHOTO");
   const videos = event.media.filter((m) => m.kind === "VIDEO");
@@ -40,7 +44,7 @@ function Site({ event }: { event: SiteEvent }) {
     <div className={`${t.page} min-h-screen`}>
       {/* Nav */}
       <nav className={`sticky top-0 z-40 flex items-center justify-between gap-3 px-4 py-3 backdrop-blur ${t.navBar}`}>
-        <span className="truncate font-serif text-lg italic">{cfg.headline(one, two, event.name).replace("❤️", "&")}</span>
+        <span className="truncate font-serif text-lg italic">{cfg.headline(one, two, name).replace("❤️", "&")}</span>
         <div className="hidden items-center gap-6 text-sm sm:flex">
           <a href="#top" className="hover:opacity-70">{tr("home")}</a>
           {event.schedule.length > 0 && <a href="#schedule" className="hover:opacity-70">{tr("schedule")}</a>}
@@ -62,7 +66,7 @@ function Site({ event }: { event: SiteEvent }) {
         {event.coverImageUrl && <div className={`absolute inset-0 ${t.heroDim}`} />}
         <div className={`relative z-10 mx-auto w-full max-w-4xl break-words ${t.heroText} ${t.heroShadow}`}>
           <p className={t.tagline}>{tagline(event.type, cfg.tagline)}</p>
-          <h1 className={`mt-5 ${t.headline}`}>{cfg.headline(one, two, event.name)}</h1>
+          <h1 className={`mt-5 ${t.headline}`}>{cfg.headline(one, two, name)}</h1>
           <p className={`mt-6 ${t.date}`}>{fmtDate(event.eventDate)}</p>
           <div className="mt-8">
             <Countdown date={event.eventDate} time={event.startTime} boxClass={t.countdownBox} />
@@ -102,7 +106,7 @@ function Site({ event }: { event: SiteEvent }) {
       <section id="details" className={t.section}>
         <div className="mx-auto max-w-3xl">
           <h2 className={t.sectionTitle}>{tr("details")}</h2>
-          {event.description && <p className={`mb-8 whitespace-pre-line text-center text-lg leading-relaxed ${t.muted}`}>{event.description}</p>}
+          {description && <p className={`mb-8 whitespace-pre-line text-center text-lg leading-relaxed ${t.muted}`}>{description}</p>}
           <div className="grid gap-4 sm:grid-cols-3">
             <div className={t.card}>
               <p className={`text-xs uppercase tracking-widest ${t.accent}`}>{tr("date")}</p>

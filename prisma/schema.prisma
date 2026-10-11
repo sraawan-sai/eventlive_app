@@ -58,6 +58,7 @@ model Event {
   coverImageUrl String?
   tickerText   String? // scrolling message shown over the video
   tickerOn     Boolean     @default(false)
+  translations Json? // { te?: {name, description, hostOne, hostTwo}, hi?: {...} } owner-written versions
   template     String      @default("elegant")
   status       EventStatus @default(DRAFT)
   createdAt    DateTime    @default(now())

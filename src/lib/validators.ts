@@ -27,7 +27,17 @@ export const loginSchema = z.object({
   password: z.string().min(1).max(72),
 });
 
+const translationBlock = z
+  .object({
+    name: optionalText(120),
+    description: optionalText(2000),
+    hostOne: optionalText(80),
+    hostTwo: optionalText(80),
+  })
+  .optional();
+
 export const eventSchema = z.object({
+  translations: z.object({ te: translationBlock, hi: translationBlock }).optional(),
   name: z.string().trim().min(2, "Enter an event title").max(120),
   type: z.enum(EVENT_TYPES),
   hostOne: optionalText(80),
