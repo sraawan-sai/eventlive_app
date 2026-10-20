@@ -27,6 +27,14 @@ export const PACKAGES: Package[] = [
     features: ["Live stream for up to 40 viewers", "2 hours of live video", "Data-saver video (480p)", "2 GB for photos, card and video", "Telugu and Hindi text", "Scrolling message under the video"],
   },
   {
+    id: "community",
+    name: "Community",
+    price: 1000,
+    unit: "per event",
+    tagline: "For poojas, bhajans and festivals with a big crowd.",
+    features: ["Live stream for up to 1,000 viewers", "Audio-first: guests hear it, video on request", "Up to 3 hours of live", "2 GB for photos and card", "Sponsors section and scrolling message", "Telugu and Hindi text"],
+  },
+  {
     id: "pro",
     name: "Pro",
     price: 1999,
