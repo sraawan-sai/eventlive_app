@@ -61,6 +61,12 @@ export const ADDONS: { name: string; price: number }[] = [
 ];
 
 /** Big events are quoted one by one so the price matches the real cost. */
+export const LARGE_EVENT_PRICES: { name: string; price: string; details: string }[] = [
+  { name: "Community", price: "₹1,000 per event", details: "Up to 1,000 viewers, audio-first, up to 3 hours. For poojas, bhajans and festivals." },
+  { name: "Mega", price: "₹14,999 per event", details: "Up to 1,000 viewers, 4 hours, data-saver video, 20 GB of files, server tested before the day. HD upgrade +₹10,000." },
+  { name: "Unlimited", price: "₹9,999 per month", details: "For temples, trusts and event companies. Unlimited events with fair use: up to 200 viewers and 6 hours each, about 500 GB of video a month." },
+];
+
 export const CUSTOM_EVENTS = {
   title: "Festivals, temples and large events",
   text: "Hundreds or thousands of viewers, multi-day festivals, monthly plans for temples and event companies, and charity events. Tell us about your event and we'll send a quote.",

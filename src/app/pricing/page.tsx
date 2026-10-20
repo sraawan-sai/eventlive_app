@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { SiteHeader } from "@/components/site-header";
 import { ButtonLink } from "@/components/ui";
-import { ADDONS, CUSTOM_EVENTS, PACKAGES } from "@/lib/packages";
+import { ADDONS, CUSTOM_EVENTS, LARGE_EVENT_PRICES, PACKAGES } from "@/lib/packages";
 
 export const metadata: Metadata = {
   title: "Pricing — Eventra",
@@ -76,6 +76,17 @@ export default function PricingPage() {
             </div>
             <ButtonLink href={contactHref("Custom")} className="mt-5 w-full sm:mt-0 sm:w-auto sm:shrink-0">Get a quote</ButtonLink>
           </div>
+          <h3 className="mt-8 text-center font-serif text-xl font-bold">Large and community event prices</h3>
+          <ul className="mt-4 grid gap-3 md:grid-cols-3">
+            {LARGE_EVENT_PRICES.map((l) => (
+              <li key={l.name} className="rounded-2xl bg-white p-5 ring-1 ring-black/10">
+                <p className="font-semibold">{l.name}</p>
+                <p className="mt-1 text-2xl font-bold text-brand">{l.price}</p>
+                <p className="mt-2 text-sm text-foreground/70">{l.details}</p>
+              </li>
+            ))}
+          </ul>
+          <p className="mt-3 text-center text-xs text-foreground/50">Starting prices before 18% GST. The final price depends on your event.</p>
         </section>
 
         <section className="mx-auto max-w-3xl px-4 pb-16">
