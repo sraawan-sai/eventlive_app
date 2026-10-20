@@ -16,6 +16,7 @@ export async function SiteHeader({ marketing = false }: { marketing?: boolean })
             <Link href="/" className="text-brand">Home</Link>
             <Link href="/#features" className="hover:text-brand">Features</Link>
             <Link href="/#templates" className="hover:text-brand">Templates</Link>
+            <Link href="/pricing" className="hover:text-brand">Pricing</Link>
           </nav>
         )}
         <nav className="flex items-center gap-2">
