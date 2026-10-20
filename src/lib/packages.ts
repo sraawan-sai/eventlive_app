@@ -44,6 +44,14 @@ export const PACKAGES: Package[] = [
     features: ["Live stream for up to 300 viewers", "4 hours of live video", "Data saver by default, HD on request", "10 GB for photos, card and video", "Sponsors section for community events", "Priority help on the event day"],
   },
   {
+    id: "mega",
+    name: "Mega",
+    price: 14999,
+    unit: "per event",
+    tagline: "For festivals and big public events.",
+    features: ["Live stream for up to 1,000 viewers", "4 hours of live video", "Data-saver video, HD on request", "20 GB for photos, card and video", "Server set up and tested for your event", "Setup call before the day"],
+  },
+  {
     id: "unlimited",
     name: "Unlimited",
     price: 9999,
@@ -55,6 +63,7 @@ export const PACKAGES: Package[] = [
 
 export const ADDONS: { name: string; price: number }[] = [
   { name: "+50 viewers", price: 299 },
+  { name: "HD upgrade for Mega", price: 10000 },
   { name: "Extra live hour", price: 150 },
   { name: "HD upgrade (Basic or Plus)", price: 500 },
   { name: "Extra 10 GB of files", price: 99 },
