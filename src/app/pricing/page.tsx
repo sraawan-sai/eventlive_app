@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import { SiteHeader } from "@/components/site-header";
 import { ButtonLink } from "@/components/ui";
-import { ADDONS, PACKAGES } from "@/lib/packages";
+import { ADDONS, CUSTOM_EVENTS, PACKAGES } from "@/lib/packages";
 
 export const metadata: Metadata = {
   title: "Pricing — Eventra",
-  description: "Simple packages for event websites and live streaming: Free, Basic, Community, Pro, Plus, Mega and Unlimited.",
+  description: "Simple packages for event websites and live streaming: Free, Basic, Pro and Premium.",
 };
 
 const inr = (n: number) => `₹${n.toLocaleString("en-IN")}`;
@@ -24,12 +24,12 @@ export default function PricingPage() {
           <p className="text-xs font-semibold uppercase tracking-widest text-brand">Pricing</p>
           <h1 className="mx-auto mt-3 max-w-2xl font-serif text-4xl font-bold sm:text-5xl">Pick the package that fits your event</h1>
           <p className="mx-auto mt-4 max-w-xl text-foreground/70">
-            Pay once per event, or monthly if you run many. Prices are before 18% GST.
+            Pay once per event. Prices are before 18% GST.
           </p>
         </section>
 
         <section className="mx-auto max-w-7xl px-4 py-12">
-          <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {PACKAGES.map((p) => (
               <li
                 key={p.id}
@@ -63,6 +63,21 @@ export default function PricingPage() {
           </p>
         </section>
 
+        <section className="mx-auto max-w-5xl px-4 pb-12">
+          <div className="rounded-2xl bg-white p-6 ring-1 ring-black/10 sm:flex sm:items-center sm:justify-between sm:gap-8 sm:p-8">
+            <div>
+              <h2 className="font-serif text-2xl font-bold">{CUSTOM_EVENTS.title}</h2>
+              <p className="mt-2 text-sm text-foreground/70">{CUSTOM_EVENTS.text}</p>
+              <ul className="mt-4 grid gap-1.5 text-sm sm:grid-cols-2">
+                {CUSTOM_EVENTS.points.map((t) => (
+                  <li key={t} className="flex gap-2"><span className="text-brand" aria-hidden>✓</span>{t}</li>
+                ))}
+              </ul>
+            </div>
+            <ButtonLink href={contactHref("Custom")} className="mt-5 w-full sm:mt-0 sm:w-auto sm:shrink-0">Get a quote</ButtonLink>
+          </div>
+        </section>
+
         <section className="mx-auto max-w-3xl px-4 pb-16">
           <h2 className="text-center font-serif text-2xl font-bold">Add-ons</h2>
           <ul className="mt-5 grid gap-3 sm:grid-cols-2">
@@ -74,7 +89,7 @@ export default function PricingPage() {
             ))}
           </ul>
           <p className="mt-6 text-center text-xs text-foreground/50">
-            Viewers means people watching at the same time. Unlimited is fair use: if you pass the monthly video limit, we switch to audio-first or you can add more.
+            Viewers means people watching at the same time.
           </p>
         </section>
       </main>
