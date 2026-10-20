@@ -19,6 +19,14 @@ export const PACKAGES: Package[] = [
     features: ["Event website and share link", "Live stream for up to 20 viewers", "1 hour of live video", "1 GB for photos and card", "QR code and WhatsApp preview"],
   },
   {
+    id: "starter",
+    name: "Starter",
+    price: 499,
+    unit: "per event",
+    tagline: "For a small gathering or a first live event.",
+    features: ["Live stream for up to 30 viewers", "2 hours of live video", "Data-saver video quality", "2 GB for photos and card", "Telugu and Hindi text", "QR code and WhatsApp preview"],
+  },
+  {
     id: "basic",
     name: "Basic",
     price: 999,

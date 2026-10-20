@@ -5,7 +5,7 @@ import { ADDONS, CUSTOM_EVENTS, PACKAGES } from "@/lib/packages";
 
 export const metadata: Metadata = {
   title: "Pricing — Eventra",
-  description: "Simple packages for event websites and live streaming: Free, Basic, Pro and Premium.",
+  description: "Simple packages for event websites and live streaming: Free, Starter, Basic, Pro and Premium.",
 };
 
 const inr = (n: number) => `₹${n.toLocaleString("en-IN")}`;
@@ -29,7 +29,7 @@ export default function PricingPage() {
         </section>
 
         <section className="mx-auto max-w-7xl px-4 py-12">
-          <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
             {PACKAGES.map((p) => (
               <li
                 key={p.id}
