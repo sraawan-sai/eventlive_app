@@ -15,9 +15,17 @@ export function isAdminEmail(email?: string | null) {
   return list.includes(email.toLowerCase());
 }
 
+/**
+ * Admin = listed in ADMIN_EMAILS AND signed in with Google. Registration with a password does not verify
+ * email ownership, so a password session alone must never grant admin rights.
+ */
+export function isAdminUser(user?: { email?: string | null; provider?: string } | null) {
+  return !!user && user.provider === "google" && isAdminEmail(user.email);
+}
+
 /** Admin pages return 404 to everyone else so their existence is not revealed. */
 export async function requireAdmin() {
   const user = await requireUser();
-  if (!isAdminEmail(user.email)) notFound();
+  if (!isAdminUser(user)) notFound();
   return user;
 }

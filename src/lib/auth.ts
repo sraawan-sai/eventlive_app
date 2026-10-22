@@ -45,11 +45,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       } else if (user?.id) {
         token.uid = user.id;
       }
+      if (signedIn) token.provider = account?.provider === "google" ? "google" : "password";
       if (signedIn && token.uid) await recordLogin(token.uid as string, account?.provider === "google" ? "google" : "password");
       return token;
     },
     session({ session, token }) {
       if (token.uid) session.user.id = token.uid as string;
+      if (token.provider) session.user.provider = token.provider as string;
       return session;
     },
   },
