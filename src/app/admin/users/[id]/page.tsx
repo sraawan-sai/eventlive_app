@@ -5,7 +5,9 @@ import { fmtBytes, getUserDetail } from "@/lib/admin-data";
 import { eventTypeLabel } from "@/lib/event-types";
 import { SiteHeader } from "@/components/site-header";
 import { StatusBadge } from "@/components/status-badge";
-import { Card } from "@/components/ui";
+import { Button, Card } from "@/components/ui";
+import { PLAN_LIMITS } from "@/lib/plan-limits";
+import { setUserPackageAction } from "@/lib/actions/admin";
 
 export const metadata = { title: "User — Admin", robots: { index: false } };
 
@@ -32,6 +34,19 @@ export default async function AdminUserPage({ params }: PageProps<"/admin/users/
             <li key={k}><Card className="p-4"><p className="text-xs text-foreground/60">{k}</p><p className="mt-1 font-semibold">{v}</p></Card></li>
           ))}
         </ul>
+
+        <h2 className="mb-3 mt-8 text-lg font-semibold">Package</h2>
+        <form action={setUserPackageAction.bind(null, u.id)} className="flex flex-wrap items-center gap-3 rounded-2xl bg-white p-4 ring-1 ring-black/5">
+          <select name="packageId" defaultValue={u.packageId} aria-label="Package" className="rounded-lg border border-black/15 px-3 py-2 text-sm">
+            {Object.values(PLAN_LIMITS).map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.name} · {p.maxViewers} viewers · {p.maxLiveMinutes} min · {p.storageGB} GB
+              </option>
+            ))}
+          </select>
+          <Button type="submit">Save package</Button>
+          <span className="text-xs text-foreground/60">New users start on Free. Change it here after they pay you.</span>
+        </form>
 
         <h2 className="mb-3 mt-8 text-lg font-semibold">Events ({u.events.length})</h2>
         <ul className="divide-y divide-black/5 rounded-2xl bg-white ring-1 ring-black/5">

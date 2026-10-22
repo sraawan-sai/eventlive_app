@@ -147,6 +147,7 @@ export function LiveViewer({ slug, initialStatus, initialTicker }: { slug: strin
   const [status, setStatus] = useState<Status>(initialStatus);
   const [viewers, setViewers] = useState(0);
   const [ticker, setTicker] = useState(initialTicker);
+  const [full, setFull] = useState(false);
   const [conn, setConn] = useState<{ token: string; url: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const connected = useRef(false); // have a token / are joining
@@ -157,13 +158,24 @@ export function LiveViewer({ slug, initialStatus, initialTicker }: { slug: strin
     connected.current = true;
     failed.current = false;
     setError(null);
+    setFull(false);
     try {
       const r = await fetch("/api/livekit/token", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ slug, role: "viewer" }),
       });
-      if (!r.ok) throw new Error();
+      if (!r.ok) {
+        const d = (await r.json().catch(() => ({}))) as { code?: string };
+        if (d.code === "stream_full") {
+          // Package viewer cap reached: show a friendly message instead of an error.
+          connected.current = false;
+          failed.current = true;
+          setFull(true);
+          return;
+        }
+        throw new Error();
+      }
       setConn(await r.json());
     } catch {
       connected.current = false;
@@ -220,7 +232,21 @@ export function LiveViewer({ slug, initialStatus, initialTicker }: { slug: strin
         </span>
         <span className="opacity-70">{viewers} {viewers === 1 ? tr("viewer") : tr("viewers")}</span>
       </div>
-      {error ? (
+      {full ? (
+        <div className="grid aspect-video place-items-center rounded-2xl bg-neutral-900 p-6 text-center text-white">
+          <div>
+            <p className="font-semibold">{tr("streamFull")}</p>
+            <p className="mt-1 text-sm text-white/60">{tr("streamFullSub")}</p>
+            <button
+              type="button"
+              onClick={() => void join()}
+              className="mt-3 rounded-lg bg-white px-4 py-2 text-sm font-semibold text-neutral-900"
+            >
+              {tr("tryAgain")}
+            </button>
+          </div>
+        </div>
+      ) : error ? (
         <div className="grid aspect-video place-items-center rounded-2xl bg-neutral-900 p-6 text-center text-white">
           <div>
             <p className="font-semibold">{tr("unableConnect")}</p>

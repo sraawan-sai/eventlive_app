@@ -34,6 +34,7 @@ model User {
   passwordHash String? // null for accounts created via Google
   lastLoginAt  DateTime?
   loginCount   Int      @default(0)
+  packageId    String   @default("free") // see src/lib/plan-limits.ts; set by an admin until payments exist
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   events       Event[]
@@ -94,6 +95,7 @@ model LiveStream {
   status    LiveStreamStatus @default(OFFLINE)
   startedAt DateTime?
   endedAt   DateTime?
+  liveSeconds Int            @default(0) // total seconds this event has been live, across sessions
   createdAt DateTime         @default(now())
   updatedAt DateTime         @updatedAt
 }

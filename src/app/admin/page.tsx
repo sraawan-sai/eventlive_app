@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { requireAdmin } from "@/lib/session";
 import { fmtBytes, getOverview, listUsers, recentLogins } from "@/lib/admin-data";
+import { limitsFor } from "@/lib/plan-limits";
 import { SiteHeader } from "@/components/site-header";
 import { Card } from "@/components/ui";
 
@@ -61,6 +62,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
               <tr>
                 <th className="px-4 py-3">User</th>
                 <th className="px-4 py-3">Sign-in</th>
+                <th className="px-4 py-3">Package</th>
                 <th className="px-4 py-3">Joined</th>
                 <th className="px-4 py-3">Last login</th>
                 <th className="px-4 py-3 text-right">Logins</th>
@@ -76,6 +78,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
                     <div className="text-xs text-foreground/60">{u.email}</div>
                   </td>
                   <td className="px-4 py-3">{u.hasPassword ? "Email + password" : "Google"}</td>
+                  <td className="px-4 py-3 font-semibold">{limitsFor(u.packageId).name}</td>
                   <td className="px-4 py-3">{when(u.createdAt)}</td>
                   <td className="px-4 py-3">{when(u.lastLoginAt)}</td>
                   <td className="px-4 py-3 text-right">{u.loginCount}</td>
@@ -84,7 +87,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
                 </tr>
               ))}
               {users.length === 0 && (
-                <tr><td colSpan={7} className="px-4 py-8 text-center text-foreground/60">No users found.</td></tr>
+                <tr><td colSpan={8} className="px-4 py-8 text-center text-foreground/60">No users found.</td></tr>
               )}
             </tbody>
           </table>

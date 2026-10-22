@@ -3,7 +3,8 @@ import { z } from "zod";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { closeRoom, roomNameFor } from "@/lib/livekit";
-import { endStream, heartbeat, startStream } from "@/lib/live-state";
+import { endStream, heartbeat, startStream, stopForLimit } from "@/lib/live-state";
+import { planState, toUsage } from "@/lib/plan";
 
 const bodySchema = z.object({ action: z.enum(["start", "heartbeat", "stop"]) });
 
@@ -20,17 +21,28 @@ export async function POST(req: Request, ctx: RouteContext<"/api/events/[slug]/l
   if (!event) return NextResponse.json({ error: "Event not found." }, { status: 404 });
   if (event.userId !== session.user.id) return NextResponse.json({ error: "Forbidden." }, { status: 403 });
 
+  const state = await planState(event.id);
+  const upgradeMsg = `You have used all ${state.limits.maxLiveMinutes} minutes of live time in your ${state.limits.name} package. Upgrade to keep streaming.`;
+
   switch (parsed.data.action) {
     case "start":
+      if (state.exceeded) return NextResponse.json({ error: upgradeMsg, code: "limit_time", usage: toUsage(state) }, { status: 403 });
       await startStream(event.id);
       break;
-    case "heartbeat":
+    case "heartbeat": {
+      if (state.exceeded) {
+        // Time is up: end the stream for everyone and tell the broadcaster to stop.
+        await stopForLimit(event.id);
+        const after = await planState(event.id);
+        return NextResponse.json({ ok: true, stop: true, code: "limit_time", error: upgradeMsg, usage: toUsage(after) });
+      }
       await heartbeat(event.id);
-      break;
+      return NextResponse.json({ ok: true, stop: false, usage: toUsage(state) });
+    }
     case "stop":
       await endStream(event.id);
       await closeRoom(roomNameFor(event.id));
       break;
   }
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({ ok: true, usage: toUsage(await planState(event.id)) });
 }

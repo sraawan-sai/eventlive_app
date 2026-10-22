@@ -14,7 +14,8 @@ import {
   createLocalAudioTrack,
   createLocalVideoTrack,
 } from "livekit-client";
-import { Button } from "@/components/ui";
+import { Button, ButtonLink } from "@/components/ui";
+import type { UsageInfo } from "@/lib/plan-limits";
 
 type Phase = "idle" | "starting" | "live" | "stopping";
 
@@ -36,8 +37,10 @@ function mediaError(e: unknown, kind: "camera" | "mic"): string {
 
 /** An error retrying cannot fix (not logged in, not the owner, permissions). Empty message = already shown. */
 class FatalError extends Error {
-  constructor(message: string | null) {
+  code?: string;
+  constructor(message: string | null, code?: string) {
     super(message ?? "");
+    this.code = code;
   }
 }
 
@@ -48,7 +51,7 @@ const fmt = (s: number) => {
   return `${h ? `${h}:` : ""}${String(m).padStart(h ? 2 : 1, "0")}:${String(sec).padStart(2, "0")}`;
 };
 
-export function Broadcaster({ slug, eventName }: { slug: string; eventName: string }) {
+export function Broadcaster({ slug, eventName, initialUsage }: { slug: string; eventName: string; initialUsage: UsageInfo }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const roomRef = useRef<Room | null>(null);
   const camRef = useRef<LocalVideoTrack | null>(null);
@@ -69,6 +72,9 @@ export function Broadcaster({ slug, eventName }: { slug: string; eventName: stri
   const [notice, setNotice] = useState<string | null>(null);
   const [viewers, setViewers] = useState(0);
   const [seconds, setSeconds] = useState(0);
+  const [usage, setUsage] = useState<UsageInfo>(initialUsage);
+  const [upgrade, setUpgrade] = useState(false);
+  const stopRef = useRef<() => Promise<void>>(async () => {});
   const [quality, setQuality] = useState<ConnectionQuality>(ConnectionQuality.Unknown);
 
   const attachPreview = useCallback((t: LocalVideoTrack | null) => {
@@ -135,8 +141,8 @@ export function Broadcaster({ slug, eventName }: { slug: string; eventName: stri
       body: JSON.stringify({ slug, role: "broadcaster" }),
     });
     if (!r.ok) {
-      const d = (await r.json().catch(() => ({}))) as { error?: string };
-      throw new FatalError(r.status === 401 || r.status === 403 || r.status === 503 ? d.error ?? MSG.connect : MSG.connect);
+      const d = (await r.json().catch(() => ({}))) as { error?: string; code?: string };
+      throw new FatalError(r.status === 401 || r.status === 403 || r.status === 503 ? d.error ?? MSG.connect : MSG.connect, d.code);
     }
     const { token, url } = (await r.json()) as { token: string; url: string };
 
@@ -214,7 +220,11 @@ export function Broadcaster({ slug, eventName }: { slug: string; eventName: stri
     try {
       const room = await connectRoom();
       const s = await post("start"); // mark LIVE only after media is publishing
-      if (!s.ok) throw new Error("start failed");
+      if (!s.ok) {
+        const d = (await s.json().catch(() => ({}))) as { error?: string; code?: string; usage?: UsageInfo };
+        if (d.usage) setUsage(d.usage);
+        throw new FatalError(d.error ?? null, d.code);
+      }
       setViewers(room.remoteParticipants.size);
       setSeconds(0);
       setPhase("live");
@@ -225,6 +235,7 @@ export function Broadcaster({ slug, eventName }: { slug: string; eventName: stri
       void room?.disconnect();
       if (e instanceof FatalError) {
         if (e.message) setError(e.message);
+        if (e.code?.startsWith("limit_")) setUpgrade(true);
       } else {
         setError(MSG.connect);
       }
@@ -311,11 +322,29 @@ export function Broadcaster({ slug, eventName }: { slug: string; eventName: stri
     return () => document.removeEventListener("fullscreenchange", onChange);
   }, []);
 
+  useEffect(() => {
+    stopRef.current = stopLive;
+  });
+
   // Duration timer + heartbeat (keeps the stream marked LIVE for guests) + viewer count
   useEffect(() => {
     if (phase !== "live") return;
     const tick = setInterval(() => setSeconds((s) => s + 1), 1000);
-    const beat = setInterval(() => void post("heartbeat").catch(() => {}), 10000);
+    const beat = setInterval(async () => {
+      try {
+        const r = await post("heartbeat");
+        const d = (await r.json().catch(() => ({}))) as { stop?: boolean; error?: string; usage?: UsageInfo };
+        if (d.usage) setUsage(d.usage);
+        if (d.stop) {
+          // The server ended the stream because the package's live time is used up.
+          setError(d.error ?? "Your live time is used up. Upgrade to keep streaming.");
+          setUpgrade(true);
+          void stopRef.current();
+        }
+      } catch {
+        /* a missed heartbeat is fine; the server tolerates several */
+      }
+    }, 10000);
     return () => {
       clearInterval(tick);
       clearInterval(beat);
@@ -407,7 +436,25 @@ export function Broadcaster({ slug, eventName }: { slug: string; eventName: stri
         </p>
       )}
       {notice && <p role="status" className="rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-800">{notice}</p>}
+      {!usage.exempt && (
+        <p className="text-xs text-foreground/60">
+          {usage.planName} package: live time {Math.min(Math.ceil(usage.usedSeconds / 60), Math.ceil(usage.limitSeconds / 60))} of {Math.ceil(usage.limitSeconds / 60)} min used · up to {usage.maxViewers} viewers
+          {!upgrade && usage.limitSeconds - usage.usedSeconds <= 300 && usage.limitSeconds > usage.usedSeconds && (
+            <span className="ml-1 font-semibold text-amber-700">
+              Less than {Math.max(1, Math.ceil((usage.limitSeconds - usage.usedSeconds) / 60))} min left.{" "}
+              <a href="/pricing" className="underline">Upgrade</a>
+            </span>
+          )}
+        </p>
+      )}
       {error && <p role="alert" className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
+      {upgrade && (
+        <div className="rounded-xl border border-brand/30 bg-tint p-4 text-center">
+          <p className="font-semibold">Upgrade to keep streaming</p>
+          <p className="mt-1 text-sm text-foreground/70">Pick a bigger package for more live time and more viewers.</p>
+          <ButtonLink href="/pricing" className="mt-3">See packages</ButtonLink>
+        </div>
+      )}
 
       <div className="grid grid-cols-3 gap-2">
         <Button variant="secondary" onClick={toggleMic} disabled={busy}>{micOn ? "🎤 Mic" : "🔇 Muted"}</Button>

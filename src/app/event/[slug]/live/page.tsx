@@ -4,6 +4,7 @@ import { requireUser } from "@/lib/session";
 import { livekitConfig } from "@/lib/livekit";
 import { ButtonLink, Card } from "@/components/ui";
 import { SiteHeader } from "@/components/site-header";
+import { planState, toUsage } from "@/lib/plan";
 import { Broadcaster } from "@/components/live/broadcaster";
 import { TickerControl } from "@/components/live/ticker-control";
 
@@ -15,8 +16,10 @@ type Props = PageProps<"/event/[slug]/live">;
 export default async function BroadcasterPage({ params }: Props) {
   const { slug } = await params;
   const user = await requireUser();
-  const event = await db.event.findUnique({ where: { slug }, select: { name: true, userId: true, tickerText: true, tickerOn: true } });
+  const event = await db.event.findUnique({ where: { slug }, select: { id: true, name: true, userId: true, tickerText: true, tickerOn: true } });
   if (!event || event.userId !== user.id) notFound();
+
+  const usage = toUsage(await planState(event.id));
 
   return (
     <>
@@ -24,7 +27,7 @@ export default async function BroadcasterPage({ params }: Props) {
       <main className="flex-1 px-4 py-6">
         {livekitConfig() ? (
           <div className="mx-auto flex w-full max-w-xl flex-col gap-4">
-            <Broadcaster slug={slug} eventName={event.name} />
+            <Broadcaster slug={slug} eventName={event.name} initialUsage={usage} />
             <TickerControl slug={slug} initialText={event.tickerText ?? ""} initialOn={event.tickerOn} />
           </div>
         ) : (

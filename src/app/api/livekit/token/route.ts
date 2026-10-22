@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { createLiveKitToken, livekitConfig, roomNameFor } from "@/lib/livekit";
+import { countViewers, createLiveKitToken, livekitConfig, roomNameFor } from "@/lib/livekit";
+import { planState } from "@/lib/plan";
 import { ensureStream, getStreamStatus } from "@/lib/live-state";
 
 const bodySchema = z.object({
@@ -31,6 +32,13 @@ export async function POST(req: Request) {
     const session = await auth();
     if (!session?.user?.id) return NextResponse.json({ error: "Please log in." }, { status: 401 });
     if (session.user.id !== event.userId) return NextResponse.json({ error: "Forbidden." }, { status: 403 });
+    const plan = await planState(event.id);
+    if (plan.exceeded) {
+      return NextResponse.json(
+        { error: `You have used all ${plan.limits.maxLiveMinutes} minutes of live time in your ${plan.limits.name} package. Upgrade to keep streaming.`, code: "limit_time" },
+        { status: 403 },
+      );
+    }
     await ensureStream(event.id);
     const t = await createLiveKitToken({ room, role: "broadcaster", userId: session.user.id, name: session.user.name ?? undefined });
     return NextResponse.json({ token: t.token, url: t.url }, { headers: { "Cache-Control": "no-store" } });
@@ -40,6 +48,11 @@ export async function POST(req: Request) {
   if (event.status === "DRAFT") return NextResponse.json({ error: "Event not found." }, { status: 404 });
   if ((await getStreamStatus(event.id)) !== "LIVE") {
     return NextResponse.json({ error: "The live stream has not started yet." }, { status: 409 });
+  }
+  // Package viewer cap: guests above the limit are turned away (they are not told about upgrades).
+  const plan = await planState(event.id);
+  if (!plan.exempt && (await countViewers(room)) >= plan.limits.maxViewers) {
+    return NextResponse.json({ error: "This stream is full right now.", code: "stream_full" }, { status: 409 });
   }
   const t = await createLiveKitToken({ room, role: "viewer" });
   return NextResponse.json({ token: t.token, url: t.url }, { headers: { "Cache-Control": "no-store" } });

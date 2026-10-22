@@ -26,7 +26,7 @@ export async function listUsers(q: string) {
     orderBy: [{ lastLoginAt: { sort: "desc", nulls: "last" } }, { createdAt: "desc" }],
     take: 200,
     select: {
-      id: true, name: true, email: true, passwordHash: true, createdAt: true, lastLoginAt: true, loginCount: true,
+      id: true, name: true, email: true, passwordHash: true, packageId: true, createdAt: true, lastLoginAt: true, loginCount: true,
       _count: { select: { events: true } },
     },
   });
@@ -41,6 +41,7 @@ export async function listUsers(q: string) {
     name: u.name,
     email: u.email,
     hasPassword: !!u.passwordHash,
+    packageId: u.packageId,
     createdAt: u.createdAt,
     lastLoginAt: u.lastLoginAt,
     loginCount: u.loginCount,

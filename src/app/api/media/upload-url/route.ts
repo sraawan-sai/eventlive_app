@@ -4,6 +4,8 @@ import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { MEDIA_KINDS, MEDIA_RULES, SINGLE_KINDS, SPONSOR_RULE, extFor } from "@/lib/media";
 import { presignUpload, storageConfig } from "@/lib/storage";
+import { isExemptUser, userStorageBytes } from "@/lib/plan";
+import { limitsFor } from "@/lib/plan-limits";
 
 const bodySchema = z.object({
   eventId: z.string().min(1),
@@ -25,6 +27,18 @@ export async function POST(req: Request) {
   const event = await db.event.findUnique({ where: { id: eventId }, select: { userId: true } });
   if (!event) return NextResponse.json({ error: "Event not found." }, { status: 404 });
   if (event.userId !== session.user.id) return NextResponse.json({ error: "Forbidden." }, { status: 403 });
+
+  // Package storage quota (photos, card, video and music across all of the owner's events).
+  const owner = await db.user.findUnique({ where: { id: session.user.id }, select: { packageId: true, email: true, passwordHash: true } });
+  if (owner && !isExemptUser(owner)) {
+    const limits = limitsFor(owner.packageId);
+    if ((await userStorageBytes(session.user.id)) + size > limits.storageGB * 1024 ** 3) {
+      return NextResponse.json(
+        { error: `Your ${limits.name} package includes ${limits.storageGB} GB of files and it is full. Upgrade to add more (see the Pricing page).`, code: "limit_storage" },
+        { status: 403 },
+      );
+    }
+  }
 
   const rule = kind === "SPONSOR" ? { ...SPONSOR_RULE, label: "Sponsors" } : MEDIA_RULES[kind];
   if (!rule.types.includes(contentType)) {
