@@ -37,7 +37,7 @@ function PhoneMock() {
 export default function Home() {
   return (
     <>
-      <SiteHeader marketing />
+      <SiteHeader />
       <main className="flex-1">
         <section className="bg-gradient-to-br from-white via-tint to-rose-100/60">
           <div className="mx-auto grid max-w-6xl items-center gap-12 px-4 py-14 lg:grid-cols-2 lg:py-20">

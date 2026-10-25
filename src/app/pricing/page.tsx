@@ -18,7 +18,7 @@ function contactHref(plan: string) {
 export default function PricingPage() {
   return (
     <>
-      <SiteHeader marketing />
+      <SiteHeader />
       <main className="flex-1">
         <section className="bg-gradient-to-br from-white via-tint to-rose-100/60 px-4 py-14 text-center sm:py-20">
           <p className="text-xs font-semibold uppercase tracking-widest text-brand">Pricing</p>
