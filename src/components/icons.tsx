@@ -1,0 +1,43 @@
+import type { ReactNode, SVGProps } from "react";
+
+function Icon({ children, ...p }: SVGProps<SVGSVGElement> & { children: ReactNode }) {
+  return (
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" {...p}>
+      {children}
+    </svg>
+  );
+}
+
+export const UserIcon = (p: SVGProps<SVGSVGElement>) => (
+  <Icon {...p}><circle cx="12" cy="8" r="4" /><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5" /></Icon>
+);
+export const MailIcon = (p: SVGProps<SVGSVGElement>) => (
+  <Icon {...p}><rect x="3" y="5" width="18" height="14" rx="2" /><path d="M3 7l9 6 9-6" /></Icon>
+);
+export const LockIcon = (p: SVGProps<SVGSVGElement>) => (
+  <Icon {...p}><rect x="5" y="11" width="14" height="10" rx="2" /><path d="M8 11V8a4 4 0 018 0v3" /></Icon>
+);
+export const TrashIcon = (p: SVGProps<SVGSVGElement>) => (
+  <Icon {...p}><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3" /></Icon>
+);
+export const SaveIcon = (p: SVGProps<SVGSVGElement>) => (
+  <Icon {...p}><path d="M5 3h11l3 3v15H5z" /><path d="M8 3v5h7V3M8 21v-7h8v7" /></Icon>
+);
+export const GridIcon = (p: SVGProps<SVGSVGElement>) => (
+  <Icon {...p}><rect x="4" y="4" width="7" height="7" rx="1" /><rect x="13" y="4" width="7" height="7" rx="1" /><rect x="4" y="13" width="7" height="7" rx="1" /><rect x="13" y="13" width="7" height="7" rx="1" /></Icon>
+);
+export const CalendarIcon = (p: SVGProps<SVGSVGElement>) => (
+  <Icon {...p}><rect x="4" y="5" width="16" height="16" rx="2" /><path d="M4 10h16M8 3v4M16 3v4" /></Icon>
+);
+export const PlusIcon = (p: SVGProps<SVGSVGElement>) => (
+  <Icon {...p}><path d="M12 5v14M5 12h14" /></Icon>
+);
+export const TagIcon = (p: SVGProps<SVGSVGElement>) => (
+  <Icon {...p}><path d="M3 12V4h8l10 10-8 8z" /><circle cx="8" cy="8" r="1.2" /></Icon>
+);
+export const CogIcon = (p: SVGProps<SVGSVGElement>) => (
+  <Icon {...p}>
+    <circle cx="12" cy="12" r="3" />
+    <path d="M12 2v3M12 19v3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M2 12h3M19 12h3M4.9 19.1L7 17M17 7l2.1-2.1" />
+  </Icon>
+);
