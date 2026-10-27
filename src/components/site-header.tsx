@@ -18,13 +18,14 @@ export async function SiteHeader() {
   const user = session?.user;
   const admin = isAdminUser(user);
   const links = user
-    ? [...MAIN_LINKS, { href: "/dashboard", label: "Dashboard" }, { href: "/create-event", label: "Create event" }, ...(admin ? [{ href: "/admin", label: "Admin" }] : [])]
+    ? [...MAIN_LINKS, { href: "/dashboard", label: "Dashboard" }, { href: "/create-event", label: "Create event" }, { href: "/profile", label: "Profile" }, ...(admin ? [{ href: "/admin", label: "Admin" }] : [])]
     : MAIN_LINKS;
 
   const account = user ? (
     <>
       {admin && <ButtonLink href="/admin" variant="ghost">Admin</ButtonLink>}
       <ButtonLink href="/dashboard" variant="ghost">Dashboard</ButtonLink>
+      <ButtonLink href="/profile" variant="ghost">Profile</ButtonLink>
       <form action={logoutAction}>
         <Button variant="secondary" type="submit">Log out</Button>
       </form>

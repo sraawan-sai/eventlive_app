@@ -19,7 +19,7 @@ export default async function DashboardPage() {
     include: { stream: { select: { status: true } } },
   });
 
-  const owner = await db.user.findUnique({ where: { id: user.id }, select: { packageId: true, email: true, passwordHash: true } });
+  const owner = await db.user.findUnique({ where: { id: user.id }, select: { name: true, packageId: true, email: true, passwordHash: true } });
   const limits = limitsFor(owner?.packageId);
   const exempt = owner ? isExemptUser(owner) : false;
   const usedBytes = await userStorageBytes(user.id);
@@ -43,7 +43,7 @@ export default async function DashboardPage() {
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h1 className="font-serif text-3xl font-bold">Welcome, {user.name?.split(" ")[0] ?? "there"}</h1>
+            <h1 className="font-serif text-3xl font-bold">Welcome, {(owner?.name ?? user.name)?.split(" ")[0] ?? "there"}</h1>
             <p className="text-foreground/60">Manage your events and go live</p>
           </div>
           <ButtonLink href="/create-event">+ Create Event</ButtonLink>

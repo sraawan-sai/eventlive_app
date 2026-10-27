@@ -7,7 +7,8 @@ import { SiteHeader } from "@/components/site-header";
 import { StatusBadge } from "@/components/status-badge";
 import { Button, Card } from "@/components/ui";
 import { PLAN_LIMITS } from "@/lib/plan-limits";
-import { setUserPackageAction } from "@/lib/actions/admin";
+import { deleteUserAction, setUserPackageAction } from "@/lib/actions/admin";
+import { DeleteUserForm } from "@/components/delete-user-form";
 
 export const metadata = { title: "User — Admin", robots: { index: false } };
 
@@ -15,7 +16,7 @@ const when = (d: Date | null) =>
   d ? d.toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Kolkata" }) : "Never";
 
 export default async function AdminUserPage({ params }: PageProps<"/admin/users/[id]">) {
-  await requireAdmin();
+  const admin = await requireAdmin();
   const { id } = await params;
   const u = await getUserDetail(id);
   if (!u) notFound();
@@ -76,6 +77,13 @@ export default async function AdminUserPage({ params }: PageProps<"/admin/users/
           ))}
           {u.logins.length === 0 && <li className="px-4 py-6 text-center text-foreground/60">No logins recorded yet.</li>}
         </ul>
+
+        {u.id !== admin.id && (
+          <>
+            <h2 className="mb-3 mt-8 text-lg font-semibold text-red-700">Danger zone</h2>
+            <DeleteUserForm action={deleteUserAction.bind(null, u.id)} name={u.name} />
+          </>
+        )}
       </main>
     </>
   );
