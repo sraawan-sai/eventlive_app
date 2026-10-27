@@ -78,7 +78,7 @@ export function PasswordForm() {
     <Card className="p-6">
       <SectionHead icon={<LockIcon />} title="Change password" text="Use at least 8 characters" />
       <form action={action} className="mt-5 space-y-4">
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="space-y-4">
           <Field label="Current password">
             <IconInput icon={<LockIcon width={18} height={18} />} name="currentPassword" type="password" required autoComplete="current-password" />
           </Field>

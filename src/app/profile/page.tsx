@@ -22,14 +22,22 @@ export default async function ProfilePage() {
       <SiteHeader hideAccountLinks />
       <div className="flex flex-1 bg-slate-50">
         <AccountSidebar active="/profile" />
-        <main className="mx-auto w-full max-w-3xl flex-1 space-y-6 px-4 py-8 lg:mx-0 lg:px-10">
-          <div>
+        <main className="grid w-full min-w-0 flex-1 content-start gap-6 px-4 py-8 lg:grid-cols-2 lg:px-10">
+          <div className="lg:col-span-2">
             <h1 className="font-serif text-3xl font-bold">Profile &amp; Settings</h1>
             <p className="text-foreground/60">Manage your account details and preferences</p>
           </div>
-          <ProfileForm name={me.name} email={me.email} packageName={limitsFor(me.packageId).name} />
-          {hasPassword && <PasswordForm />}
-          <DeleteAccountForm hasPassword={hasPassword} />
+          <div className="lg:col-span-2">
+            <ProfileForm name={me.name} email={me.email} packageName={limitsFor(me.packageId).name} />
+          </div>
+          {hasPassword && (
+            <div>
+              <PasswordForm />
+            </div>
+          )}
+          <div className={hasPassword ? "" : "lg:col-span-2"}>
+            <DeleteAccountForm hasPassword={hasPassword} />
+          </div>
         </main>
       </div>
     </>
