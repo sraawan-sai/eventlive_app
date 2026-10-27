@@ -40,14 +40,14 @@ export async function SiteHeader({ hideAccountLinks = false }: { hideAccountLink
 
   return (
     <header className="sticky top-0 z-30 border-b border-black/5 bg-white/90 backdrop-blur">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4">
-        <Logo />
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 md:grid md:grid-cols-[1fr_auto_1fr]">
+        <Logo className="justify-self-start" />
         <nav className="hidden items-center gap-7 text-sm font-medium text-foreground/70 md:flex">
           {MAIN_LINKS.map((l) => (
             <Link key={l.href} href={l.href} className="hover:text-brand">{l.label}</Link>
           ))}
         </nav>
-        <div className="hidden items-center gap-2 md:flex">{account}</div>
+        <div className="hidden items-center justify-end gap-2 md:flex">{account}</div>
         <MobileMenu links={links}>{account}</MobileMenu>
       </div>
     </header>
