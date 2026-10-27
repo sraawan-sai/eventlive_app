@@ -19,7 +19,7 @@ export default async function ProfilePage() {
 
   return (
     <>
-      <SiteHeader />
+      <SiteHeader hideAccountLinks />
       <div className="flex flex-1 bg-slate-50">
         <AccountSidebar active="/profile" />
         <main className="mx-auto w-full max-w-3xl flex-1 space-y-6 px-4 py-8 lg:mx-0 lg:px-10">

@@ -1,11 +1,10 @@
 import Link from "next/link";
-import { CalendarIcon, CogIcon, GridIcon, PlusIcon, TagIcon } from "@/components/icons";
+import { CalendarIcon, CogIcon, GridIcon, ImageIcon } from "@/components/icons";
 
 const ITEMS = [
   { href: "/dashboard", label: "Dashboard", Icon: GridIcon },
   { href: "/dashboard#events", label: "My Events", Icon: CalendarIcon },
-  { href: "/create-event", label: "Create Event", Icon: PlusIcon },
-  { href: "/pricing", label: "Packages", Icon: TagIcon },
+  { href: "/media", label: "Media Library", Icon: ImageIcon },
   { href: "/profile", label: "Profile & Settings", Icon: CogIcon },
 ];
 

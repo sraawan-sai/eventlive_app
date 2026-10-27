@@ -58,7 +58,7 @@ export default async function DashboardPage() {
           )}
           {!exempt && <ButtonLink href="/pricing" variant="secondary" className="px-4 py-1.5 text-xs">Upgrade</ButtonLink>}
         </div>
-        <DashboardEvents events={events} />
+        <section id="events" className="scroll-mt-24"><DashboardEvents events={events} /></section>
       </main>
     </>
   );
