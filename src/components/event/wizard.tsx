@@ -31,9 +31,9 @@ const INITIAL: EventFormValues = {
   translations: emptyTranslations(),
 };
 
-export function EventWizard() {
+export function EventWizard({ initialType }: { initialType?: EventType } = {}) {
   const [step, setStep] = useState(0);
-  const [v, setV] = useState<EventFormValues>(INITIAL);
+  const [v, setV] = useState<EventFormValues>(initialType ? { ...INITIAL, type: initialType } : INITIAL);
   const [nameTouched, setNameTouched] = useState(false);
   const [errors, setErrors] = useState<Record<string, string[] | undefined>>({});
   const [error, setError] = useState<string>();
