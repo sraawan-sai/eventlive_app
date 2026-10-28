@@ -50,3 +50,45 @@ export const VideoIcon = (p: SVGProps<SVGSVGElement>) => (
 export const MusicIcon = (p: SVGProps<SVGSVGElement>) => (
   <Icon {...p}><path d="M9 18V6l11-2v12" /><circle cx="6.5" cy="18" r="2.5" /><circle cx="17.5" cy="16" r="2.5" /></Icon>
 );
+export const CameraIcon = (p: SVGProps<SVGSVGElement>) => (
+  <Icon {...p}><path d="M4 8h3l2-3h6l2 3h3v11H4z" /><circle cx="12" cy="13" r="3.5" /></Icon>
+);
+export const CakeIcon = (p: SVGProps<SVGSVGElement>) => (
+  <Icon {...p}><path d="M4 20h16v-6H4zM4 14c2 0 2-2 4-2s2 2 4 2 2-2 4-2 2 2 4 2M12 12V8M12 8c-1-1-1-2 0-3 1 1 1 2 0 3z" /></Icon>
+);
+export const BriefcaseIcon = (p: SVGProps<SVGSVGElement>) => (
+  <Icon {...p}><rect x="3" y="7" width="18" height="13" rx="2" /><path d="M9 7V5h6v2M3 13h18" /></Icon>
+);
+export const PaletteIcon = (p: SVGProps<SVGSVGElement>) => (
+  <Icon {...p}>
+    <path d="M12 3a9 9 0 100 18c1.5 0 2-1 1.5-2-.6-1.2.3-2.5 1.7-2.5H17a4 4 0 004-4c0-5-4-9.5-9-9.5z" />
+    <circle cx="8" cy="11" r="1" /><circle cx="12" cy="7.5" r="1" /><circle cx="16" cy="11" r="1" />
+  </Icon>
+);
+export const BoltIcon = (p: SVGProps<SVGSVGElement>) => (
+  <Icon {...p}><path d="M13 3L5 14h6l-1 7 8-11h-6z" /></Icon>
+);
+export const UsersIcon = (p: SVGProps<SVGSVGElement>) => (
+  <Icon {...p}>
+    <circle cx="9" cy="8" r="3.5" /><path d="M2.5 20c0-3.5 3-6 6.5-6s6.5 2.5 6.5 6" />
+    <circle cx="17" cy="9" r="2.6" /><path d="M17 14c3 0 5 2 5 5" />
+  </Icon>
+);
+export const MonitorIcon = (p: SVGProps<SVGSVGElement>) => (
+  <Icon {...p}><rect x="3" y="4" width="18" height="12" rx="2" /><path d="M8 21h8M12 16v5" /></Icon>
+);
+export const PlayIcon = (p: SVGProps<SVGSVGElement>) => (
+  <Icon {...p}><path d="M8 5l12 7-12 7z" /></Icon>
+);
+export const ArrowRightIcon = (p: SVGProps<SVGSVGElement>) => (
+  <Icon {...p}><path d="M5 12h14M13 6l6 6-6 6" /></Icon>
+);
+export const HeartIcon = (p: SVGProps<SVGSVGElement>) => (
+  <Icon {...p}><path d="M12 20s-8-5-8-11a4.5 4.5 0 018-2.8A4.5 4.5 0 0120 9c0 6-8 11-8 11z" /></Icon>
+);
+export const SendIcon = (p: SVGProps<SVGSVGElement>) => (
+  <Icon {...p}><path d="M21 3L10 14M21 3l-7 18-4-7-7-4z" /></Icon>
+);
+export const EyeIcon = (p: SVGProps<SVGSVGElement>) => (
+  <Icon {...p}><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z" /><circle cx="12" cy="12" r="3" /></Icon>
+);
