@@ -39,7 +39,7 @@ export async function createLiveKitToken({ room, role, userId, name, maxTtlSecon
 
   const at = new AccessToken(cfg.key, cfg.secret, {
     identity,
-    name: isBroadcaster ? name ?? "Broadcaster" : name || "Guest",
+    name: isBroadcaster ? name ?? "Broadcaster" : "Guest",
     ttl: Math.max(60, Math.min(isBroadcaster ? 8 * 3600 : 3 * 3600, maxTtlSeconds ?? Infinity)),
   });
   at.addGrant({

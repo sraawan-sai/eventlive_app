@@ -59,9 +59,6 @@ const en = {
   musicPause: "Pause music",
   madeWith: "Made with",
   language: "Language",
-  yourName: "Your name (optional)",
-  yourNameSub: "The host will see it in the list of people watching.",
-  skip: "Skip",
 } as const;
 
 export type Key = keyof typeof en;
@@ -121,9 +118,6 @@ const te: Record<Key, string> = {
   musicPause: "సంగీతం ఆపండి",
   madeWith: "రూపొందించినది",
   language: "భాష",
-  yourName: "మీ పేరు (ఐచ్ఛికం)",
-  yourNameSub: "చూస్తున్నవారి జాబితాలో హోస్ట్‌కు ఇది కనిపిస్తుంది.",
-  skip: "దాటవేయండి",
 };
 
 const hi: Record<Key, string> = {
@@ -181,9 +175,6 @@ const hi: Record<Key, string> = {
   musicPause: "संगीत रोकें",
   madeWith: "बनाया गया",
   language: "भाषा",
-  yourName: "आपका नाम (वैकल्पिक)",
-  yourNameSub: "देखने वालों की सूची में होस्ट को यह दिखेगा।",
-  skip: "छोड़ें",
 };
 
 export const DICT: Record<Lang, Record<Key, string>> = { en, te, hi };

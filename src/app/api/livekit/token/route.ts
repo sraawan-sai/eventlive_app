@@ -10,19 +10,6 @@ const bodySchema = z.object({
   slug: z.string().min(1).max(80),
   // A *request* only. Broadcaster rights are granted solely after the ownership check below.
   role: z.enum(["broadcaster", "viewer"]),
-  // Optional display name a guest typed, shown to the host in the viewer list. Plain text only.
-  name: z
-    .string()
-    .max(40)
-    .transform((t) =>
-      Array.from(t)
-        .filter((c) => c.charCodeAt(0) >= 32 && c.charCodeAt(0) !== 127 && c !== "<" && c !== ">")
-        .join("")
-        .split(" ")
-        .filter(Boolean)
-        .join(" "),
-    )
-    .optional(),
 });
 
 export async function POST(req: Request) {
@@ -31,7 +18,7 @@ export async function POST(req: Request) {
   }
   const parsed = bodySchema.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: "Invalid request." }, { status: 400 });
-  const { slug, role, name: guestName } = parsed.data;
+  const { slug, role } = parsed.data;
 
   const event = await db.event.findUnique({
     where: { slug },
@@ -69,6 +56,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "This stream is full right now.", code: "stream_full" }, { status: 409 });
   }
   const left = plan.exempt ? undefined : plan.limitSeconds - plan.usedSeconds + 30;
-  const t = await createLiveKitToken({ room, role: "viewer", name: guestName || undefined, maxTtlSeconds: left });
+  const t = await createLiveKitToken({ room, role: "viewer", maxTtlSeconds: left });
   return NextResponse.json({ token: t.token, url: t.url }, { headers: { "Cache-Control": "no-store" } });
 }

@@ -1,33 +1,13 @@
 "use client";
 
 import "@livekit/components-styles";
-import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { LiveKitRoom, RoomAudioRenderer, StartAudio, VideoTrack, useConnectionState, useRoomContext, useTracks } from "@livekit/components-react";
 import { useLang } from "@/components/event/lang";
 import { TickerBar } from "./ticker-bar";
 import { ConnectionQuality, ConnectionState, RoomEvent, Track, type RemoteTrackPublication, type RoomOptions } from "livekit-client";
 
 type Status = "OFFLINE" | "LIVE" | "ENDED";
-
-const NAME_KEY = "eventra-guest-name";
-const NAME_EVENT = "eventra-guest-name-change";
-
-function subscribeName(onChange: () => void) {
-  window.addEventListener(NAME_EVENT, onChange);
-  window.addEventListener("storage", onChange);
-  return () => {
-    window.removeEventListener(NAME_EVENT, onChange);
-    window.removeEventListener("storage", onChange);
-  };
-}
-
-function readName(): string | null {
-  try {
-    return localStorage.getItem(NAME_KEY);
-  } catch {
-    return "";
-  }
-}
 
 // adaptiveStream: request only the quality layer that fits the player size and the viewer's bandwidth.
 // dynacast: lets the broadcaster stop encoding layers nobody needs.
@@ -172,17 +152,6 @@ export function LiveViewer({ slug, initialStatus, initialTicker }: { slug: strin
   const [error, setError] = useState<string | null>(null);
   const connected = useRef(false); // have a token / are joining
   const failed = useRef(false); // last join failed: wait for the user to retry
-  const nameRef = useRef(""); // optional display name the host sees in the viewer list
-  const askedRef = useRef(false); // true once the guest typed a name or skipped
-  const stored = useSyncExternalStore(subscribeName, readName, () => ""); // null = never asked on this device
-  const [answered, setAnswered] = useState(false);
-  const nameAsked = answered || stored !== null; // false = show the name prompt before joining
-  const [draft, setDraft] = useState("");
-
-  useEffect(() => {
-    nameRef.current = stored ?? nameRef.current;
-    askedRef.current = askedRef.current || stored !== null;
-  }, [stored]);
 
   const join = useCallback(async () => {
     if (connected.current) return;
@@ -194,7 +163,7 @@ export function LiveViewer({ slug, initialStatus, initialTicker }: { slug: strin
       const r = await fetch("/api/livekit/token", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ slug, role: "viewer", name: nameRef.current || undefined }),
+        body: JSON.stringify({ slug, role: "viewer" }),
       });
       if (!r.ok) {
         const d = (await r.json().catch(() => ({}))) as { code?: string };
@@ -227,7 +196,7 @@ export function LiveViewer({ slug, initialStatus, initialTicker }: { slug: strin
         setViewers(d.viewers);
         if (d.ticker) setTicker(d.ticker);
         if (d.status === "LIVE") {
-          if (!connected.current && !failed.current && askedRef.current) void join();
+          if (!connected.current && !failed.current) void join();
         } else {
           connected.current = false;
           failed.current = false;
@@ -246,20 +215,6 @@ export function LiveViewer({ slug, initialStatus, initialTicker }: { slug: strin
     };
   }, [slug, join]);
 
-  function answerName(value: string) {
-    const v = value.trim().slice(0, 40);
-    nameRef.current = v;
-    askedRef.current = true;
-    try {
-      localStorage.setItem(NAME_KEY, v);
-      window.dispatchEvent(new Event(NAME_EVENT));
-    } catch {
-      /* storage blocked: the guest is asked again next visit */
-    }
-    setAnswered(true);
-    void join();
-  }
-
   if (status === "ENDED" || status === "OFFLINE") {
     return (
       <div>
@@ -277,35 +232,7 @@ export function LiveViewer({ slug, initialStatus, initialTicker }: { slug: strin
         </span>
         <span className="opacity-70">{viewers} {viewers === 1 ? tr("viewer") : tr("viewers")}</span>
       </div>
-      {!nameAsked ? (
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            answerName(draft);
-          }}
-          className="grid aspect-video place-items-center rounded-2xl bg-neutral-900 p-6 text-center text-white"
-        >
-          <div className="w-full max-w-xs">
-            <p className="font-semibold">{tr("yourName")}</p>
-            <p className="mt-1 text-sm text-white/60">{tr("yourNameSub")}</p>
-            <input
-              value={draft}
-              onChange={(e) => setDraft(e.target.value)}
-              maxLength={40}
-              autoComplete="name"
-              className="mt-3 w-full rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-base text-white outline-none placeholder:text-white/40 focus:border-white/60"
-            />
-            <div className="mt-3 flex justify-center gap-2">
-              <button type="submit" className="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-neutral-900">
-                {tr("watchLive")}
-              </button>
-              <button type="button" onClick={() => answerName("")} className="rounded-lg px-4 py-2 text-sm font-semibold text-white/80 hover:bg-white/10">
-                {tr("skip")}
-              </button>
-            </div>
-          </div>
-        </form>
-      ) : full ? (
+      {full ? (
         <div className="grid aspect-video place-items-center rounded-2xl bg-neutral-900 p-6 text-center text-white">
           <div>
             <p className="font-semibold">{tr("streamFull")}</p>
