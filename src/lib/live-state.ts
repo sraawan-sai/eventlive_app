@@ -32,6 +32,16 @@ export async function ensureStream(eventId: string) {
 }
 
 export async function startStream(eventId: string) {
+  const current = await db.liveStream.findUnique({ where: { eventId } });
+  if (current?.status === "LIVE" && current.startedAt) {
+    if (Date.now() - current.updatedAt.getTime() <= HEARTBEAT_TIMEOUT_MS) {
+      // Still running (broadcaster reconnected or refreshed the page): keep the original start time.
+      // Resetting it would throw away the time already used and the package limit would never be reached.
+      await heartbeat(eventId);
+      return;
+    }
+    await endStream(eventId, current.updatedAt); // abandoned stream: bank the time up to its last heartbeat
+  }
   await db.$transaction([
     db.liveStream.upsert({
       where: { eventId },

@@ -44,6 +44,20 @@ class FatalError extends Error {
   }
 }
 
+interface Guest {
+  id: string;
+  name: string;
+  joinedAt: number;
+}
+
+/** Guests currently in the room (identities issued by the server start with `guest-`), oldest first. */
+function listGuests(room: Room): Guest[] {
+  return Array.from(room.remoteParticipants.values())
+    .filter((p) => p.identity.startsWith("guest-"))
+    .map((p) => ({ id: p.identity, name: p.name && p.name !== "Guest" ? p.name : "", joinedAt: p.joinedAt?.getTime() ?? Date.now() }))
+    .sort((a, b) => a.joinedAt - b.joinedAt);
+}
+
 const fmt = (s: number) => {
   const h = Math.floor(s / 3600);
   const m = Math.floor((s % 3600) / 60);
@@ -71,6 +85,7 @@ export function Broadcaster({ slug, eventName, initialUsage }: { slug: string; e
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [viewers, setViewers] = useState(0);
+  const [guests, setGuests] = useState<Guest[]>([]);
   const [seconds, setSeconds] = useState(0);
   const [usage, setUsage] = useState<UsageInfo>(initialUsage);
   const [upgrade, setUpgrade] = useState(false);
@@ -125,6 +140,12 @@ export function Broadcaster({ slug, eventName, initialUsage }: { slug: string; e
     [slug],
   );
 
+  function syncGuests(room: Room) {
+    const g = listGuests(room);
+    setGuests(g);
+    setViewers(g.length);
+  }
+
   const teardownMedia = useCallback(() => {
     camRef.current?.stop();
     micRef.current?.stop();
@@ -167,8 +188,8 @@ export function Broadcaster({ slug, eventName, initialUsage }: { slug: string; e
     room
       .on(RoomEvent.Reconnecting, () => setNotice(MSG.reconnecting))
       .on(RoomEvent.Reconnected, () => setNotice(null))
-      .on(RoomEvent.ParticipantConnected, () => setViewers(room.remoteParticipants.size))
-      .on(RoomEvent.ParticipantDisconnected, () => setViewers(room.remoteParticipants.size))
+      .on(RoomEvent.ParticipantConnected, () => syncGuests(room))
+      .on(RoomEvent.ParticipantDisconnected, () => syncGuests(room))
       .on(RoomEvent.ConnectionQualityChanged, (q, p) => {
         if (p.isLocal) setQuality(q);
       })
@@ -190,24 +211,30 @@ export function Broadcaster({ slug, eventName, initialUsage }: { slug: string; e
 
   async function rejoin() {
     setNotice(MSG.reconnecting);
+    let fatal: FatalError | null = null;
     for (let attempt = 1; attempt <= 15 && wantLive.current; attempt++) {
       await new Promise((r) => setTimeout(r, Math.min(1500 * attempt, 10000)));
       if (!wantLive.current) return;
       try {
         const room = await connectRoom();
         await post("start"); // in case the stream was marked ended while we were offline
-        setViewers(room.remoteParticipants.size);
+        syncGuests(room);
         setNotice(null);
         return;
       } catch (e) {
-        if (e instanceof FatalError) break;
+        if (e instanceof FatalError) {
+          fatal = e;
+          break;
+        }
         /* network still down: keep trying */
       }
     }
     if (!wantLive.current) return;
     wantLive.current = false;
     setNotice(null);
-    setError(MSG.connect);
+    // The server closes the room when the package's live time runs out; show the upgrade message, not a connection error.
+    if (fatal?.code?.startsWith("limit_")) setUpgrade(true);
+    setError(fatal?.message || MSG.connect);
     setPhase("idle");
     void post("stop").catch(() => {});
   }
@@ -225,7 +252,7 @@ export function Broadcaster({ slug, eventName, initialUsage }: { slug: string; e
         if (d.usage) setUsage(d.usage);
         throw new FatalError(d.error ?? null, d.code);
       }
-      setViewers(room.remoteParticipants.size);
+      syncGuests(room);
       setSeconds(0);
       setPhase("live");
     } catch (e) {
@@ -259,6 +286,7 @@ export function Broadcaster({ slug, eventName, initialUsage }: { slug: string; e
       await post("stop").catch(() => {});
       teardownMedia();
       setViewers(0);
+      setGuests([]);
       setPhase("idle");
     }
   }
@@ -429,6 +457,29 @@ export function Broadcaster({ slug, eventName, initialUsage }: { slug: string; e
           </div>
         )}
       </div>
+
+      {live && (
+        <details className="rounded-xl bg-white p-3 text-sm ring-1 ring-black/10">
+          <summary className="cursor-pointer font-semibold">
+            👁 Who is watching ({viewers})
+          </summary>
+          {guests.length === 0 ? (
+            <p className="mt-2 text-foreground/60">No one has joined yet. Share your event link so guests can watch.</p>
+          ) : (
+            <ul className="mt-2 divide-y divide-black/5">
+              {guests.map((g, i) => (
+                <li key={g.id} className="flex items-center justify-between gap-3 py-1.5">
+                  <span className="truncate">{g.name || `Guest ${i + 1}`}</span>
+                  <span className="shrink-0 text-xs text-foreground/50">
+                    joined {new Date(g.joinedAt).toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit" })}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+          <p className="mt-2 text-xs text-foreground/50">Guests do not need an account, so names are whatever they typed. Guests who skipped it show as Guest.</p>
+        </details>
+      )}
 
       {live && (quality === ConnectionQuality.Poor || quality === ConnectionQuality.Lost) && !notice && (
         <p role="status" className="rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-800">

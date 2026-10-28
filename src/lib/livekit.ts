@@ -23,13 +23,15 @@ interface TokenOpts {
   /** user id for broadcaster; ignored for viewers */
   userId?: string;
   name?: string;
+  /** Upper bound on the token lifetime in seconds (remaining package time), so an expired package cannot rejoin. */
+  maxTtlSeconds?: number;
 }
 
 /**
  * Permissions are derived ONLY from `role`, which callers must have verified server-side.
  * Viewers can never publish.
  */
-export async function createLiveKitToken({ room, role, userId, name }: TokenOpts) {
+export async function createLiveKitToken({ room, role, userId, name, maxTtlSeconds }: TokenOpts) {
   const cfg = livekitConfig();
   if (!cfg) throw new Error("LiveKit is not configured");
   const isBroadcaster = role === "broadcaster";
@@ -37,8 +39,8 @@ export async function createLiveKitToken({ room, role, userId, name }: TokenOpts
 
   const at = new AccessToken(cfg.key, cfg.secret, {
     identity,
-    name: isBroadcaster ? name ?? "Broadcaster" : "Guest",
-    ttl: isBroadcaster ? "8h" : "3h",
+    name: isBroadcaster ? name ?? "Broadcaster" : name || "Guest",
+    ttl: Math.max(60, Math.min(isBroadcaster ? 8 * 3600 : 3 * 3600, maxTtlSeconds ?? Infinity)),
   });
   at.addGrant({
     room,
