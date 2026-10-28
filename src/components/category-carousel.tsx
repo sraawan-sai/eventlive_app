@@ -65,17 +65,19 @@ export function CategoryCarousel({ items }: { items: Category[] }) {
         className="flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth px-4 pb-8 pt-2 [scrollbar-width:none] sm:px-14 [&::-webkit-scrollbar]:hidden"
       >
         {items.map((c) => (
-          <li key={c.type} className="w-[62%] shrink-0 snap-start sm:w-[calc((100%-2rem)/3)] lg:w-[calc((100%-4rem)/5)] xl:w-[calc((100%-6rem)/7)]">
+          <li key={c.type} className="w-[78%] shrink-0 snap-start sm:w-[calc((100%-2rem)/3)] lg:w-[calc((100%-3rem)/4)] xl:w-[calc((100%-4rem)/5)]">
             <Link
               href={`/create-event?type=${c.type}`}
-              className="group flex h-full flex-col overflow-hidden rounded-3xl bg-white p-2.5 text-center shadow-[0_8px_30px_rgba(214,40,75,0.08)] ring-1 ring-black/5 transition hover:-translate-y-1 hover:shadow-[0_14px_36px_rgba(214,40,75,0.16)]"
+              className="group flex h-full flex-col overflow-hidden rounded-3xl bg-white p-0 text-center shadow-[0_8px_30px_rgba(214,40,75,0.08)] ring-1 ring-black/5 transition hover:-translate-y-1 hover:shadow-[0_14px_36px_rgba(214,40,75,0.16)]"
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={c.image} alt="" loading="lazy" className="aspect-[10/11] w-full rounded-2xl object-cover" />
-              <span className="mx-auto mt-3 grid size-14 place-items-center rounded-full bg-tint text-2xl">{c.emoji}</span>
-              <span className="mt-2 text-base font-bold">{c.label}</span>
-              <span className="mt-1 px-2 text-xs leading-snug text-foreground/60">{c.text}</span>
-              <span className="mx-auto mb-1 mt-auto grid size-10 place-items-center rounded-full bg-tint pt-0 text-lg text-brand transition group-hover:bg-brand group-hover:text-white" aria-hidden="true">
+              <span className="block overflow-hidden">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={c.image} alt="" loading="lazy" className="aspect-[4/4.6] w-full object-cover transition duration-500 group-hover:scale-105" />
+              </span>
+              <span className="mx-auto mt-4 grid size-16 place-items-center rounded-full bg-tint text-3xl">{c.emoji}</span>
+              <span className="mt-3 px-3 text-xl font-bold">{c.label}</span>
+              <span className="mt-1.5 px-3 text-sm leading-snug text-foreground/60">{c.text}</span>
+              <span className="mx-auto mb-4 mt-4 grid size-11 place-items-center rounded-full bg-tint text-xl text-brand transition group-hover:bg-brand group-hover:text-white" aria-hidden="true">
                 →
               </span>
             </Link>
