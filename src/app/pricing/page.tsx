@@ -10,11 +10,6 @@ export const metadata: Metadata = {
 
 const inr = (n: number) => `₹${n.toLocaleString("en-IN")}`;
 
-function contactHref(plan: string) {
-  const wa = process.env.NEXT_PUBLIC_CONTACT_WHATSAPP?.replace(/\D/g, "");
-  return wa ? `https://wa.me/${wa}?text=${encodeURIComponent(`Hi, I want the ${plan} package on Eventra.`)}` : "/register";
-}
-
 export default function PricingPage() {
   return (
     <>
@@ -52,7 +47,7 @@ export default function PricingPage() {
                     </li>
                   ))}
                 </ul>
-                <ButtonLink href={p.price === 0 ? "/register" : contactHref(p.name)} variant={p.popular ? "primary" : "secondary"} className="mt-6 w-full">
+                <ButtonLink href={p.price === 0 ? "/register" : `/payment?plan=${p.id}`} variant={p.popular ? "primary" : "secondary"} className="mt-6 w-full">
                   {p.price === 0 ? "Start free" : "Choose " + p.name}
                 </ButtonLink>
               </li>
@@ -74,7 +69,7 @@ export default function PricingPage() {
                 ))}
               </ul>
             </div>
-            <ButtonLink href={contactHref("Custom")} className="mt-5 w-full sm:mt-0 sm:w-auto sm:shrink-0">Get a quote</ButtonLink>
+            <ButtonLink href="/payment?plan=custom" className="mt-5 w-full sm:mt-0 sm:w-auto sm:shrink-0">Get a quote</ButtonLink>
           </div>
           <h3 className="mt-8 text-center font-serif text-xl font-bold">Large and community event prices</h3>
           <ul className="mt-4 grid gap-3 md:grid-cols-3">

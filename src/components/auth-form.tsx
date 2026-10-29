@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState } from "react";
+import { useActionState, type ReactNode } from "react";
 import type { FormState } from "@/lib/actions/auth";
 import { Button, Card, Field, inputCls } from "@/components/ui";
 import { Logo } from "@/components/logo";
@@ -10,17 +10,20 @@ export function AuthForm({
   mode,
   action,
   googleAction,
+  aside,
 }: {
   mode: "login" | "register";
   action: (s: FormState, f: FormData) => Promise<FormState>;
   /** Passed only when Google login is configured. */
   googleAction?: () => Promise<void>;
+  /** Optional panel shown beside the form on large screens (below it on phones). */
+  aside?: ReactNode;
 }) {
   const [state, formAction, pending] = useActionState(action, {});
   const fe = state.fieldErrors ?? {};
   const isLogin = mode === "login";
   return (
-    <main className="flex flex-1 items-center justify-center bg-white px-4 py-12">
+    <main className="flex flex-1 flex-col items-center justify-center gap-6 bg-white px-4 py-12 lg:flex-row lg:items-start">
       <Card className="w-full max-w-md p-7">
         <div className="mb-4 flex justify-center"><Logo /></div>
         <h1 className="text-center font-serif text-2xl font-bold">{isLogin ? "Welcome Back" : "Create your account"}</h1>
@@ -82,6 +85,7 @@ export function AuthForm({
           </Link>
         </p>
       </Card>
+      {aside}
     </main>
   );
 }
