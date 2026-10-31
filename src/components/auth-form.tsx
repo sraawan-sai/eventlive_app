@@ -23,8 +23,9 @@ export function AuthForm({
   const fe = state.fieldErrors ?? {};
   const isLogin = mode === "login";
   return (
-    <main className="flex flex-1 flex-col items-center justify-center gap-6 bg-white px-4 py-12 lg:flex-row lg:items-start">
-      <Card className="w-full max-w-md p-7">
+    <main className="flex flex-1 items-center justify-center bg-white px-4 py-12">
+      <div className="flex w-full flex-col items-center gap-6 lg:w-auto lg:flex-row lg:items-stretch">
+      <Card className="flex w-full max-w-md flex-col justify-center p-7">
         <div className="mb-4 flex justify-center"><Logo /></div>
         <h1 className="text-center font-serif text-2xl font-bold">{isLogin ? "Welcome Back" : "Create your account"}</h1>
         <p className="mt-1 text-center text-sm text-foreground/60">
@@ -86,6 +87,7 @@ export function AuthForm({
         </p>
       </Card>
       {aside}
+      </div>
     </main>
   );
 }

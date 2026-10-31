@@ -34,14 +34,14 @@ export default async function PaymentPage({ searchParams }: { searchParams: Prom
     <>
       <SiteHeader />
       <main className="flex-1 bg-slate-50 px-4 py-10">
-        <div className="mx-auto grid max-w-5xl items-start gap-6 lg:grid-cols-[1fr_auto]">
-          <div className="space-y-6">
-            <div>
+        <div className="mx-auto max-w-5xl">
+          <div>
               <p className="text-xs font-semibold uppercase tracking-widest text-brand">{custom ? "Get a quote" : "Payment"}</p>
               <h1 className="mt-1 font-serif text-3xl font-bold sm:text-4xl">{custom ? CUSTOM_EVENTS.title : `${plan!.name} package`}</h1>
               <p className="mt-2 text-foreground/65">{custom ? CUSTOM_EVENTS.text : plan!.tagline}</p>
-            </div>
-
+          </div>
+          <div className="mt-6 grid items-stretch gap-6 lg:grid-cols-[1fr_auto]">
+          <div className="flex flex-col gap-6">
             <Card className="p-6">
               {plan ? (
                 <>
@@ -93,6 +93,7 @@ export default async function PaymentPage({ searchParams }: { searchParams: Prom
             title="Pay and ask on WhatsApp"
             subtitle="Scan to message us about your package. Instagram is for any other question."
           />
+          </div>
         </div>
       </main>
     </>

@@ -46,7 +46,7 @@ export async function ContactPanel({
   const qr = waLink ? await QRCode.toDataURL(waLink, { width: 480, margin: 1, errorCorrectionLevel: "M" }) : "";
 
   return (
-    <Card className="w-full max-w-md p-7 text-center">
+    <Card className="flex w-full max-w-md flex-col justify-center p-7 text-center">
       <h2 className="font-serif text-2xl font-bold">{title}</h2>
       <p className="mt-1 text-sm text-foreground/60">{subtitle}</p>
 
