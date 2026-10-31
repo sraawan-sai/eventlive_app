@@ -1,3 +1,4 @@
+import { crossSiteBlocked, forbidden } from "@/lib/request-guard";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { auth } from "@/lib/auth";
@@ -14,6 +15,7 @@ const bodySchema = z.object({
 
 /** Owner-only: set the scrolling message and switch it on or off. */
 export async function PATCH(req: Request, ctx: RouteContext<"/api/events/[slug]/ticker">) {
+  if (crossSiteBlocked(req)) return forbidden();
   const { slug } = await ctx.params;
   const session = await auth();
   if (!session?.user?.id) return NextResponse.json({ error: "Please log in." }, { status: 401 });

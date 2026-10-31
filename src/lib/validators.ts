@@ -16,10 +16,18 @@ const time = z
   .optional()
   .or(z.literal("").transform(() => undefined));
 
+/** At least 8 characters with a letter and a number. 72 is the most bcrypt can use. */
+export const passwordSchema = z
+  .string()
+  .min(8, "Password must be at least 8 characters")
+  .max(72, "Password can be at most 72 characters")
+  .regex(/[A-Za-z]/, "Password must include a letter")
+  .regex(/[0-9]/, "Password must include a number");
+
 export const registerSchema = z.object({
   name: z.string().trim().min(2, "Enter your name").max(80),
   email: z.string().trim().toLowerCase().email("Enter a valid email"),
-  password: z.string().min(8, "Password must be at least 8 characters").max(72),
+  password: passwordSchema,
 });
 
 export const loginSchema = z.object({

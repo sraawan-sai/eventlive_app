@@ -1,3 +1,4 @@
+import { crossSiteBlocked, forbidden } from "@/lib/request-guard";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { auth } from "@/lib/auth";
@@ -10,6 +11,7 @@ const bodySchema = z.object({ action: z.enum(["start", "heartbeat", "stop"]) });
 
 /** Owner-only: mark the stream live / alive / ended. */
 export async function POST(req: Request, ctx: RouteContext<"/api/events/[slug]/live">) {
+  if (crossSiteBlocked(req)) return forbidden();
   const { slug } = await ctx.params;
   const session = await auth();
   if (!session?.user?.id) return NextResponse.json({ error: "Please log in." }, { status: 401 });

@@ -1,9 +1,11 @@
+import { crossSiteBlocked, forbidden } from "@/lib/request-guard";
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { deleteObjects } from "@/lib/storage";
 
 export async function DELETE(_req: Request, ctx: RouteContext<"/api/media/[mediaId]">) {
+  if (crossSiteBlocked(_req)) return forbidden();
   const { mediaId } = await ctx.params;
   const session = await auth();
   if (!session?.user?.id) return NextResponse.json({ error: "Please log in." }, { status: 401 });

@@ -7,6 +7,8 @@ import { db } from "@/lib/db";
 import { signOut } from "@/lib/auth";
 import { deleteUserAccount } from "@/lib/account";
 import { requireUser } from "@/lib/session";
+import { passwordCheckBlocked, recordPasswordCheckFailure } from "@/lib/rate-limit";
+import { passwordSchema } from "@/lib/validators";
 
 export interface AccountState {
   error?: string;
@@ -14,7 +16,7 @@ export interface AccountState {
 }
 
 const nameSchema = z.string().trim().min(2, "Enter your name").max(80);
-const newPasswordSchema = z.string().min(8, "New password must be at least 8 characters").max(72);
+const PAUSED = "Too many wrong passwords. Please wait 15 minutes and try again.";
 
 export async function updateProfileAction(_: AccountState, formData: FormData): Promise<AccountState> {
   const user = await requireUser();
@@ -31,10 +33,14 @@ export async function changePasswordAction(_: AccountState, formData: FormData):
   const me = await db.user.findUnique({ where: { id: user.id }, select: { passwordHash: true } });
   if (!me?.passwordHash) return { error: "Your account signs in with Google, so it has no password." };
 
-  const next = newPasswordSchema.safeParse(formData.get("newPassword"));
+  if (await passwordCheckBlocked(user.id)) return { error: PAUSED };
+  const next = passwordSchema.safeParse(formData.get("newPassword"));
   if (!next.success) return { error: next.error.issues[0]?.message };
   const current = String(formData.get("currentPassword") ?? "");
-  if (!(await bcrypt.compare(current, me.passwordHash))) return { error: "Current password is incorrect." };
+  if (!(await bcrypt.compare(current, me.passwordHash))) {
+    await recordPasswordCheckFailure(user.id);
+    return { error: "Current password is incorrect." };
+  }
 
   await db.user.update({ where: { id: user.id }, data: { passwordHash: await bcrypt.hash(next.data, 12) } });
   return { ok: "Password changed." };
@@ -47,8 +53,12 @@ export async function deleteAccountAction(_: AccountState, formData: FormData): 
 
   const me = await db.user.findUnique({ where: { id: user.id }, select: { passwordHash: true } });
   if (!me) return { error: "Account not found." };
-  if (me.passwordHash && !(await bcrypt.compare(String(formData.get("password") ?? ""), me.passwordHash))) {
-    return { error: "Password is incorrect." };
+  if (me.passwordHash) {
+    if (await passwordCheckBlocked(user.id)) return { error: PAUSED };
+    if (!(await bcrypt.compare(String(formData.get("password") ?? ""), me.passwordHash))) {
+      await recordPasswordCheckFailure(user.id);
+      return { error: "Password is incorrect." };
+    }
   }
 
   await deleteUserAccount(user.id);

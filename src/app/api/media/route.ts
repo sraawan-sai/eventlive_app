@@ -1,3 +1,4 @@
+import { crossSiteBlocked, forbidden } from "@/lib/request-guard";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { auth } from "@/lib/auth";
@@ -14,6 +15,7 @@ const bodySchema = z.object({
 
 /** Step 3 of an upload: after the browser PUT succeeded, verify the object and record it. */
 export async function POST(req: Request) {
+  if (crossSiteBlocked(req)) return forbidden();
   if (!storageConfig()) return NextResponse.json({ error: "File storage is not configured on this server." }, { status: 503 });
   const session = await auth();
   if (!session?.user?.id) return NextResponse.json({ error: "Please log in." }, { status: 401 });

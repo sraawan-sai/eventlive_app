@@ -1,3 +1,5 @@
+import { crossSiteBlocked, floodLimited, forbidden } from "@/lib/request-guard";
+import { clientIp } from "@/lib/rate-limit";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { auth } from "@/lib/auth";
@@ -13,6 +15,7 @@ const bodySchema = z.object({
 });
 
 export async function POST(req: Request) {
+  if (crossSiteBlocked(req)) return forbidden();
   if (!livekitConfig()) {
     return NextResponse.json({ error: "Live streaming is not configured on this server." }, { status: 503 });
   }
@@ -46,6 +49,9 @@ export async function POST(req: Request) {
   }
 
   // Viewer: anyone, but only for a published event that is currently live.
+  if (floodLimited(`token:${clientIp(req.headers)}`, 300)) {
+    return NextResponse.json({ error: "Too many requests. Please wait a moment." }, { status: 429 });
+  }
   if (event.status === "DRAFT") return NextResponse.json({ error: "Event not found." }, { status: 404 });
   if ((await getStreamStatus(event.id)) !== "LIVE") {
     return NextResponse.json({ error: "The live stream has not started yet." }, { status: 409 });

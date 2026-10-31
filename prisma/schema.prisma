@@ -140,3 +140,13 @@ model LoginEvent {
   @@index([userId, createdAt])
   @@index([createdAt])
 }
+
+// Failed sign-ins and sign-up attempts, used to slow down password guessing. Old rows are deleted automatically.
+model AuthAttempt {
+  id        String   @id @default(cuid())
+  key       String // e.g. "login:email:a@b.com", "login:ip:1.2.3.4", "register:ip:1.2.3.4"
+  createdAt DateTime @default(now())
+
+  @@index([key, createdAt])
+  @@index([createdAt])
+}
