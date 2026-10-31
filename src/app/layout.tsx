@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Noto_Sans_Devanagari, Noto_Sans_Telugu, Playfair_Display } from "next/font/google";
 import "./globals.css";
+import { LangProvider } from "@/components/event/lang";
 
 const inter = Inter({ variable: "--font-inter", subsets: ["latin"] });
 const telugu = Noto_Sans_Telugu({ variable: "--font-telugu", subsets: ["telugu"] });
@@ -19,7 +20,9 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={`${inter.variable} ${playfair.variable} ${telugu.variable} ${deva.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <LangProvider>{children}</LangProvider>
+      </body>
     </html>
   );
 }

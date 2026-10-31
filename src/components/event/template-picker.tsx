@@ -1,8 +1,10 @@
 "use client";
 
 import { TEMPLATE_LIST } from "@/lib/templates";
+import { useLang } from "./lang";
 
 export function TemplatePicker({ value, onChange }: { value: string; onChange: (id: string) => void }) {
+  const { label } = useLang();
   return (
     <div role="radiogroup" aria-label="Template" className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
       {TEMPLATE_LIST.map((t) => {
@@ -21,8 +23,8 @@ export function TemplatePicker({ value, onChange }: { value: string; onChange: (
                 <div key={c} className="flex-1" style={{ background: c }} />
               ))}
             </div>
-            <p className="mt-3 font-semibold">{t.name} {on && "✓"}</p>
-            <p className="text-sm text-foreground/60">{t.description}</p>
+            <p className="mt-3 font-semibold">{label(t.name)} {on && "✓"}</p>
+            <p className="text-sm text-foreground/60">{label(t.description)}</p>
           </button>
         );
       })}

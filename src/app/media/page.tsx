@@ -32,7 +32,7 @@ export default async function MediaLibraryPage() {
 
   return (
     <>
-      <SiteHeader hideAccountLinks />
+      <SiteHeader />
       <div className="flex flex-1 bg-slate-50">
         <AccountSidebar active="/media" />
         <main className="mx-auto w-full max-w-4xl flex-1 space-y-6 px-4 py-8 lg:mx-0 lg:px-10">

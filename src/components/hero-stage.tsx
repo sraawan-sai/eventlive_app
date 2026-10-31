@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type ComponentType, type PointerEvent, type SVGProps } from "react";
 import { BriefcaseIcon, CakeIcon, CameraIcon, EyeIcon, HeartIcon, MusicIcon, PlayIcon, SendIcon } from "@/components/icons";
+import { useLang } from "@/components/event/lang";
 
 type IconType = ComponentType<SVGProps<SVGSVGElement>>;
 
@@ -153,6 +154,7 @@ function Phone({ active }: { active: number }) {
  * Pointer tilt is written straight to CSS variables so moving the mouse never re-renders React.
  */
 export function HeroStage() {
+  const { label } = useLang();
   const tilt = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(0);
 
@@ -207,7 +209,7 @@ export function HeroStage() {
               <img src={`/images/categories/${f.image}.jpg`} alt="" loading="lazy" className="h-full w-full object-cover" />
             </div>
             <span className="-mt-5 ml-3 inline-flex items-center gap-2 rounded-xl bg-white px-3 py-1.5 text-sm font-semibold shadow-lg">
-              <f.Icon width={16} height={16} className="text-brand" /> {f.label}
+              <f.Icon width={16} height={16} className="text-brand" /> {label(f.label)}
             </span>
           </div>
         </div>

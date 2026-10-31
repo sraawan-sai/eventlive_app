@@ -2,12 +2,23 @@
 
 import Link from "next/link";
 import { useState, type ReactNode } from "react";
+import { useLang } from "@/components/event/lang";
+import type { UiKey } from "@/lib/ui-text";
+
+export interface MenuLink {
+  href: string;
+  /** Translated text. */
+  key?: UiKey;
+  /** Plain text, for links with no translation. */
+  label?: string;
+}
 
 /** Hamburger menu for phones. Links close the menu; `children` is the server-rendered account area. */
-export function MobileMenu({ links, children }: { links: { href: string; label: string }[]; children: ReactNode }) {
+export function MobileMenu({ links, children }: { links: MenuLink[]; children: ReactNode }) {
   const [open, setOpen] = useState(false);
+  const { ui } = useLang();
   return (
-    <div className="md:hidden">
+    <div className="lg:hidden">
       <button
         type="button"
         aria-label={open ? "Close menu" : "Open menu"}
@@ -24,7 +35,7 @@ export function MobileMenu({ links, children }: { links: { href: string; label: 
           <nav className="flex flex-col py-2 text-base font-medium">
             {links.map((l) => (
               <Link key={l.href} href={l.href} onClick={() => setOpen(false)} className="rounded-lg px-3 py-3 hover:bg-black/5">
-                {l.label}
+                {l.key ? ui(l.key) : l.label}
               </Link>
             ))}
           </nav>

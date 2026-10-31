@@ -2,6 +2,9 @@
 
 import { createContext, useCallback, useContext, useMemo, useSyncExternalStore, type ReactNode } from "react";
 import { DICT, LANGS, LANG_LABEL, TAGLINES, type Key, type Lang } from "@/lib/i18n";
+import { UI, labelText, type UiKey } from "@/lib/ui-text";
+
+const LANG_NAME: Record<Lang, string> = { en: "English", te: "తెలుగు", hi: "हिन्दी" };
 
 const STORE_KEY = "eventra-lang";
 const EVT = "eventra-lang-change";
@@ -28,12 +31,18 @@ interface Ctx {
   setLang: (l: Lang) => void;
   tr: (k: Key) => string;
   tagline: (type: string, fallback: string) => string;
+  /** Home page, header and event builder text. */
+  ui: (k: UiKey) => string;
+  /** Event type, form and template names that come from data. */
+  label: (text: string) => string;
 }
 const LangContext = createContext<Ctx>({
   lang: "en",
   setLang: () => {},
   tr: (k) => DICT.en[k],
   tagline: (_t, f) => f,
+  ui: (k) => UI.en[k],
+  label: (t) => t,
 });
 
 export function LangProvider({ children }: { children: ReactNode }) {
@@ -52,6 +61,8 @@ export function LangProvider({ children }: { children: ReactNode }) {
       setLang,
       tr: (k) => DICT[lang][k] ?? DICT.en[k],
       tagline: (type, fallback) => TAGLINES[lang][type] ?? fallback,
+      ui: (k) => UI[lang][k] ?? UI.en[k],
+      label: (t) => labelText(lang, t),
     }),
     [lang, setLang],
   );
@@ -76,5 +87,24 @@ export function LangToggle({ className }: { className: string }) {
         </button>
       ))}
     </div>
+  );
+}
+
+/** One small dropdown instead of three buttons, for crowded places such as the site header. */
+export function LangSelect({ className = "" }: { className?: string }) {
+  const { lang, setLang, tr } = useLang();
+  return (
+    <select
+      aria-label={tr("language")}
+      value={lang}
+      onChange={(e) => setLang(e.target.value as Lang)}
+      className={`cursor-pointer rounded-lg border border-black/10 bg-white px-2 py-1.5 text-sm font-medium text-foreground/80 outline-none hover:border-black/25 focus-visible:border-brand ${className}`}
+    >
+      {LANGS.map((l) => (
+        <option key={l} value={l}>
+          {LANG_NAME[l]}
+        </option>
+      ))}
+    </select>
   );
 }

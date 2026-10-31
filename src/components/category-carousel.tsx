@@ -2,18 +2,22 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useLang } from "@/components/event/lang";
 import type { EventType } from "@/lib/event-types";
+import type { UiKey } from "@/lib/ui-text";
 
 export interface Category {
   type: EventType;
   label: string;
   emoji: string;
-  text: string;
+  /** Key of the translated one-line description. */
+  textKey: UiKey;
   image: string;
 }
 
 /** Event category cards with arrows and page dots. Scrolls natively (swipe on phones), arrows and dots step by one page. */
 export function CategoryCarousel({ items }: { items: Category[] }) {
+  const { ui, label } = useLang();
   const track = useRef<HTMLUListElement>(null);
   const [pages, setPages] = useState(1);
   const [page, setPage] = useState(0);
@@ -52,10 +56,10 @@ export function CategoryCarousel({ items }: { items: Category[] }) {
 
   return (
     <div className="relative mx-auto max-w-[1500px]">
-      <button type="button" aria-label="Previous categories" onClick={() => go(-1)} disabled={page === 0} className={`${arrow} left-1`}>
+      <button type="button" aria-label={ui("prevCategories")} onClick={() => go(-1)} disabled={page === 0} className={`${arrow} left-1`}>
         ‹
       </button>
-      <button type="button" aria-label="More categories" onClick={() => go(1)} disabled={page >= pages - 1} className={`${arrow} right-1`}>
+      <button type="button" aria-label={ui("moreCategories")} onClick={() => go(1)} disabled={page >= pages - 1} className={`${arrow} right-1`}>
         ›
       </button>
 
@@ -75,8 +79,8 @@ export function CategoryCarousel({ items }: { items: Category[] }) {
                 <img src={c.image} alt="" loading="lazy" className="aspect-[4/4.6] w-full object-cover transition duration-500 group-hover:scale-105" />
               </span>
               <span className="mx-auto mt-4 grid size-16 place-items-center rounded-full bg-tint text-3xl">{c.emoji}</span>
-              <span className="mt-3 px-3 text-xl font-bold">{c.label}</span>
-              <span className="mt-1.5 px-3 text-sm leading-snug text-foreground/60">{c.text}</span>
+              <span className="mt-3 px-3 text-xl font-bold">{label(c.label)}</span>
+              <span className="mt-1.5 px-3 text-sm leading-snug text-foreground/60">{ui(c.textKey)}</span>
               <span className="mx-auto mb-4 mt-4 grid size-11 place-items-center rounded-full bg-tint text-xl text-brand transition group-hover:bg-brand group-hover:text-white" aria-hidden="true">
                 →
               </span>

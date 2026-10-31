@@ -11,8 +11,11 @@ import { InfoFields, VenueFields, type EventFormValues } from "./event-fields";
 import { TemplatePicker } from "./template-picker";
 import { EventSite } from "./event-site";
 import { valuesToSiteEvent } from "./to-site-event";
+import { demoSample } from "./demo-samples";
+import { useLang } from "./lang";
+import type { UiKey } from "@/lib/ui-text";
 
-const STEPS = ["Type", "Details", "Venue", "Template", "Preview", "Publish"];
+const STEPS: UiKey[] = ["stType", "stDetails", "stVenue", "stTemplate", "stPreview", "stPublish"];
 
 const INITIAL: EventFormValues = {
   type: "WEDDING",
@@ -31,7 +34,9 @@ const INITIAL: EventFormValues = {
   translations: emptyTranslations(),
 };
 
-export function EventWizard({ initialType }: { initialType?: EventType } = {}) {
+/** `demo`: the same steps with sample answers, open to anyone. Nothing is saved; the last step asks them to create an account. */
+export function EventWizard({ initialType, demo = false }: { initialType?: EventType; demo?: boolean } = {}) {
+  const { ui, tr, label } = useLang();
   const [step, setStep] = useState(0);
   const [v, setV] = useState<EventFormValues>(initialType ? { ...INITIAL, type: initialType } : INITIAL);
   const [nameTouched, setNameTouched] = useState(false);
@@ -54,7 +59,7 @@ export function EventWizard({ initialType }: { initialType?: EventType } = {}) {
   }
 
   function pickType(t: EventType) {
-    setV((p) => ({ ...p, type: t, hostOne: "", hostTwo: "" }));
+    setV((p) => (demo ? { ...p, ...demoSample(t), type: t } : { ...p, type: t, hostOne: "", hostTwo: "" }));
     setStep(1);
   }
 
@@ -93,7 +98,7 @@ export function EventWizard({ initialType }: { initialType?: EventType } = {}) {
     return (
       <Card className="mx-auto max-w-xl p-8 text-center">
         <div className="text-5xl">🎉</div>
-        <h1 className="mt-3 font-serif text-3xl font-bold">Your event website is ready!</h1>
+        <h1 className="mt-3 font-serif text-3xl font-bold">{ui("createdTitle")}</h1>
         <p className="mt-4 rounded-xl bg-tint px-4 py-3 font-mono text-sm break-all">{path}</p>
         <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
           <Button
@@ -103,11 +108,11 @@ export function EventWizard({ initialType }: { initialType?: EventType } = {}) {
               setCopied(true);
             }}
           >
-            {copied ? "✓ Copied" : "Copy Link"}
+            {copied ? tr("copied") : tr("copyLink")}
           </Button>
-          <ButtonLink href={path}>View Website</ButtonLink>
-          <ButtonLink href={`/dashboard/events/${created.id}`} variant="secondary">Add photos &amp; video</ButtonLink>
-          <ButtonLink href="/dashboard" variant="ghost">Go to Dashboard</ButtonLink>
+          <ButtonLink href={path}>{ui("viewWebsite")}</ButtonLink>
+          <ButtonLink href={`/dashboard/events/${created.id}`} variant="secondary">{ui("addMedia")}</ButtonLink>
+          <ButtonLink href="/dashboard" variant="ghost">{ui("goDashboard")}</ButtonLink>
         </div>
       </Card>
     );
@@ -120,22 +125,27 @@ export function EventWizard({ initialType }: { initialType?: EventType } = {}) {
           {step > 0 ? (
             <button type="button" aria-label="Back" onClick={() => setStep((s) => s - 1)} disabled={pending} className="grid size-9 place-items-center rounded-full hover:bg-black/5">←</button>
           ) : (
-            <Link href="/dashboard" aria-label="Back to dashboard" className="grid size-9 place-items-center rounded-full hover:bg-black/5">←</Link>
+            <Link href={demo ? "/" : "/dashboard"} aria-label={demo ? "Back to home" : "Back to dashboard"} className="grid size-9 place-items-center rounded-full hover:bg-black/5">←</Link>
           )}
-          <h1 className="font-serif text-xl font-bold sm:text-2xl">Create Your Event</h1>
+          <h1 className="font-serif text-xl font-bold sm:text-2xl">{demo ? ui("wizDemoTitle") : ui("wizTitle")}</h1>
         </div>
-        <span className="text-sm text-foreground/60">Step {step + 1} of 6</span>
+        <span className="text-sm text-foreground/60">{ui("stepWord")} {step + 1} / 6</span>
       </div>
+      {demo && (
+        <p className="mb-5 rounded-xl bg-tint px-4 py-3 text-sm text-foreground/80">
+          <b>{ui("demoLead")}</b> {ui("demoText")}
+        </p>
+      )}
       <ol className="mb-6 flex items-start" aria-label="Progress">
-        {STEPS.map((label, i) => (
-          <li key={label} className="relative flex flex-1 flex-col items-center">
+        {STEPS.map((stepKey, i) => (
+          <li key={stepKey} className="relative flex flex-1 flex-col items-center">
             {i > 0 && <span className={`absolute right-1/2 top-3 h-0.5 w-full ${i <= step ? "bg-brand" : "bg-black/10"}`} aria-hidden />}
             <span
               className={`relative z-10 grid size-6 place-items-center rounded-full text-[11px] font-bold ${i < step ? "bg-brand text-white" : i === step ? "bg-brand text-white ring-4 ring-brand/20" : "border-2 border-black/15 bg-white text-transparent"}`}
             >
               {i < step ? "✓" : i === step ? i + 1 : "·"}
             </span>
-            <span className={`mt-1.5 hidden text-[11px] sm:block ${i === step ? "font-semibold text-brand" : "text-foreground/50"}`}>{label}</span>
+            <span className={`mt-1.5 hidden text-[11px] sm:block ${i === step ? "font-semibold text-brand" : "text-foreground/50"}`}>{ui(stepKey)}</span>
           </li>
         ))}
       </ol>
@@ -143,8 +153,8 @@ export function EventWizard({ initialType }: { initialType?: EventType } = {}) {
       <Card className="p-6">
         {step === 0 && (
           <>
-            <h2 className="text-xl font-bold">Select Event Type</h2>
-            <p className="text-sm text-foreground/60">Choose the type of event you&apos;re creating</p>
+            <h2 className="text-xl font-bold">{ui("selType")}</h2>
+            <p className="text-sm text-foreground/60">{ui("selTypeSub")}</p>
             <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
               {EVENT_TYPES.map((t) => (
                 <button
@@ -154,7 +164,7 @@ export function EventWizard({ initialType }: { initialType?: EventType } = {}) {
                   className={`rounded-2xl p-4 text-center ring-2 transition hover:ring-brand/60 ${v.type === t ? "ring-brand bg-tint" : "ring-black/10"}`}
                 >
                   <div className="mx-auto grid size-12 place-items-center rounded-full bg-tint text-2xl">{EVENT_TYPE_CONFIG[t].emoji}</div>
-                  <div className="mt-1 text-sm font-semibold">{EVENT_TYPE_CONFIG[t].label}</div>
+                  <div className="mt-1 text-sm font-semibold">{label(EVENT_TYPE_CONFIG[t].label)}</div>
                 </button>
               ))}
             </div>
@@ -163,28 +173,28 @@ export function EventWizard({ initialType }: { initialType?: EventType } = {}) {
 
         {step === 1 && (
           <>
-            <h2 className="mb-5 text-xl font-bold">Event information</h2>
+            <h2 className="mb-5 text-xl font-bold">{ui("infoTitle")}</h2>
             <InfoFields v={v} set={set} errors={errors} />
           </>
         )}
 
         {step === 2 && (
           <>
-            <h2 className="mb-5 text-xl font-bold">Venue</h2>
+            <h2 className="mb-5 text-xl font-bold">{ui("venueTitle")}</h2>
             <VenueFields v={v} set={set} errors={errors} />
           </>
         )}
 
         {step === 3 && (
           <>
-            <h2 className="mb-5 text-xl font-bold">Choose a template</h2>
+            <h2 className="mb-5 text-xl font-bold">{ui("tplPick")}</h2>
             <TemplatePicker value={v.template} onChange={(id) => set("template", id)} />
           </>
         )}
 
         {step === 4 && (
           <>
-            <h2 className="mb-4 text-xl font-bold">Preview</h2>
+            <h2 className="mb-4 text-xl font-bold">{ui("previewTitle")}</h2>
             <div className="h-[70vh] overflow-y-auto rounded-xl ring-1 ring-black/10">
               <EventSite event={valuesToSiteEvent(v, slugPreview)} />
             </div>
@@ -193,8 +203,22 @@ export function EventWizard({ initialType }: { initialType?: EventType } = {}) {
 
         {step === 5 && (
           <>
-            <h2 className="mb-2 text-xl font-bold">Ready to publish</h2>
-            <p className="mb-5 text-foreground/70">Your website will be available at this link. You can change it later.</p>
+            {demo ? (
+              <div className="text-center">
+                <div className="text-5xl">🎉</div>
+                <h2 className="mt-3 text-xl font-bold">{ui("demoDoneTitle")}</h2>
+                <p className="mx-auto mt-2 max-w-md text-foreground/70">
+                  {ui("demoDoneText")}
+                </p>
+                <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
+                  <ButtonLink href="/register">{ui("createFree")}</ButtonLink>
+                  <ButtonLink href="/login" variant="secondary">{ui("haveAccount")}</ButtonLink>
+                </div>
+              </div>
+            ) : (
+              <>
+            <h2 className="mb-2 text-xl font-bold">{ui("readyTitle")}</h2>
+            <p className="mb-5 text-foreground/70">{ui("readyText")}</p>
             <Field label="Website link" error={errors.slug?.[0]} hint="Leave as is, or customise it. We add a number if it is taken.">
               <div className="flex items-center rounded-xl border border-black/15 bg-white focus-within:border-brand focus-within:ring-2 focus-within:ring-brand/20">
                 <span className="pl-3.5 text-sm text-foreground/50">/event/</span>
@@ -207,17 +231,21 @@ export function EventWizard({ initialType }: { initialType?: EventType } = {}) {
               </div>
             </Field>
             {error && <p role="alert" className="mt-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
+              </>
+            )}
           </>
         )}
       </Card>
 
       {step > 0 && (
         <div className="mt-5 flex justify-between">
-          <Button variant="ghost" onClick={() => setStep((s) => s - 1)} disabled={pending}>← Back</Button>
+          <Button variant="ghost" onClick={() => setStep((s) => s - 1)} disabled={pending}>← {ui("back")}</Button>
           {step < 5 ? (
-            <Button onClick={next}>Next →</Button>
+            <Button onClick={next}>{ui("next")} →</Button>
+          ) : demo ? (
+            <ButtonLink href="/register">{ui("createFree")}</ButtonLink>
           ) : (
-            <Button onClick={publish} disabled={pending}>{pending ? "Publishing…" : "Publish"}</Button>
+            <Button onClick={publish} disabled={pending}>{pending ? ui("publishing") : ui("publish")}</Button>
           )}
         </div>
       )}

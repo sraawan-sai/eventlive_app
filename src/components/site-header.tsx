@@ -3,52 +3,72 @@ import { auth } from "@/lib/auth";
 import { logoutAction } from "@/lib/actions/auth";
 import { Button, ButtonLink } from "@/components/ui";
 import { Logo } from "@/components/logo";
-import { MobileMenu } from "@/components/mobile-menu";
+import { MobileMenu, type MenuLink } from "@/components/mobile-menu";
+import { AccountMenu } from "@/components/account-menu";
+import { Tr } from "@/components/tr";
+import { LangSelect } from "@/components/event/lang";
 import { isAdminUser } from "@/lib/session";
 
-const MAIN_LINKS = [
-  { href: "/", label: "Home" },
-  { href: "/#features", label: "Features" },
-  { href: "/#templates", label: "Templates" },
-  { href: "/pricing", label: "Pricing" },
+/** The few links shown across the top. Home is the logo; the phone menu lists every page. */
+const MAIN_LINKS: MenuLink[] = [
+  { href: "/#templates", key: "navTemplates" },
+  { href: "/demo", key: "navDemo" },
+  { href: "/pricing", key: "navPricing" },
 ];
 
-/** `hideAccountLinks`: on large screens the account sidebar already has Dashboard and Profile, so they are hidden up top. */
-export async function SiteHeader({ hideAccountLinks = false }: { hideAccountLinks?: boolean } = {}) {
+export async function SiteHeader() {
   const session = await auth();
   const user = session?.user;
   const admin = isAdminUser(user);
-  const links = user
-    ? [...MAIN_LINKS, { href: "/dashboard", label: "Dashboard" }, { href: "/create-event", label: "Create event" }, { href: "/media", label: "Media Library" }, { href: "/profile", label: "Profile" }, ...(admin ? [{ href: "/admin", label: "Admin" }] : [])]
-    : MAIN_LINKS;
 
-  const account = user ? (
-    <>
-      {admin && <ButtonLink href="/admin" variant="ghost">Admin</ButtonLink>}
-      <ButtonLink href="/dashboard" variant="ghost" className={hideAccountLinks ? "lg:hidden" : ""}>Dashboard</ButtonLink>
-      <ButtonLink href="/profile" variant="ghost" className={hideAccountLinks ? "lg:hidden" : ""}>Profile</ButtonLink>
-      <form action={logoutAction}>
-        <Button variant="secondary" type="submit">Log out</Button>
-      </form>
-    </>
-  ) : (
-    <>
-      <ButtonLink href="/login" variant="secondary">Sign in</ButtonLink>
-      <ButtonLink href="/register">Get Started</ButtonLink>
-    </>
-  );
+  const accountLinks: MenuLink[] = user
+    ? [
+        { href: "/dashboard", key: "dashboard" },
+        { href: "/create-event", key: "createEvent" },
+        { href: "/media", key: "mediaLibrary" },
+        { href: "/profile", key: "profile" },
+        ...(admin ? [{ href: "/admin", label: "Admin" }] : []),
+      ]
+    : [];
+  const phoneLinks: MenuLink[] = [{ href: "/", key: "navHome" }, { href: "/#features", key: "navFeatures" }, ...MAIN_LINKS, ...accountLinks];
+
+  const initial = (user?.name || user?.email || "?").trim().charAt(0).toUpperCase();
 
   return (
     <header className="sticky top-0 z-30 border-b border-black/5 bg-white/90 backdrop-blur">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 md:grid md:grid-cols-[1fr_auto_1fr]">
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 lg:grid lg:grid-cols-[1fr_auto_1fr]">
         <Logo className="justify-self-start" />
-        <nav className="hidden items-center gap-7 text-sm font-medium text-foreground/70 md:flex">
+        <nav className="hidden items-center gap-8 text-sm font-medium text-foreground/70 lg:flex">
           {MAIN_LINKS.map((l) => (
-            <Link key={l.href} href={l.href} className="hover:text-brand">{l.label}</Link>
+            <Link key={l.href} href={l.href} className="hover:text-brand">
+              {l.key ? <Tr k={l.key} /> : l.label}
+            </Link>
           ))}
         </nav>
-        <div className="hidden items-center justify-end gap-2 md:flex">{account}</div>
-        <MobileMenu links={links}>{account}</MobileMenu>
+        <div className="hidden items-center justify-end gap-3 lg:flex">
+          <LangSelect />
+          {user ? (
+            <AccountMenu initial={initial} links={accountLinks} />
+          ) : (
+            <>
+              <ButtonLink href="/login" variant="secondary"><Tr k="signIn" /></ButtonLink>
+              <ButtonLink href="/register"><Tr k="getStarted" /></ButtonLink>
+            </>
+          )}
+        </div>
+        <MobileMenu links={phoneLinks}>
+          <LangSelect className="w-full py-2.5" />
+          {user ? (
+            <form action={logoutAction}>
+              <Button variant="secondary" type="submit"><Tr k="logOut" /></Button>
+            </form>
+          ) : (
+            <>
+              <ButtonLink href="/login" variant="secondary"><Tr k="signIn" /></ButtonLink>
+              <ButtonLink href="/register"><Tr k="getStarted" /></ButtonLink>
+            </>
+          )}
+        </MobileMenu>
       </div>
     </header>
   );
