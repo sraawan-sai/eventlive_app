@@ -39,7 +39,7 @@ export default async function DashboardPage() {
 
   return (
     <>
-      <SiteHeader />
+      <SiteHeader hideDashboardLink />
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8">
         <div className="flex items-start justify-between gap-4">
           <div>

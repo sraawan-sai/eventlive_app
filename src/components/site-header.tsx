@@ -16,21 +16,25 @@ const MAIN_LINKS: MenuLink[] = [
   { href: "/pricing", key: "navPricing" },
 ];
 
-export async function SiteHeader() {
+/** `hideDashboardLink`: set on the dashboard itself, where a link to the page you are already on is not needed. */
+export async function SiteHeader({ hideDashboardLink = false }: { hideDashboardLink?: boolean } = {}) {
   const session = await auth();
   const user = session?.user;
   const admin = isAdminUser(user);
 
+  const dashboardLink: MenuLink = { href: "/dashboard", key: "dashboard" };
   const accountLinks: MenuLink[] = user
     ? [
-        { href: "/dashboard", key: "dashboard" },
         { href: "/create-event", key: "createEvent" },
         { href: "/media", key: "mediaLibrary" },
         { href: "/profile", key: "profile" },
         ...(admin ? [{ href: "/admin", label: "Admin" }] : []),
       ]
     : [];
-  const phoneLinks: MenuLink[] = [{ href: "/", key: "navHome" }, { href: "/#features", key: "navFeatures" }, ...MAIN_LINKS, ...accountLinks];
+  // Signed-in visitors get Dashboard first in the top bar; everyone else sees the public links only.
+  const showDashboard = !!user && !hideDashboardLink;
+  const navLinks: MenuLink[] = showDashboard ? [dashboardLink, ...MAIN_LINKS] : MAIN_LINKS;
+  const phoneLinks: MenuLink[] = [{ href: "/", key: "navHome" }, ...(showDashboard ? [dashboardLink] : []), { href: "/#features", key: "navFeatures" }, ...MAIN_LINKS, ...accountLinks];
 
   const initial = (user?.name || user?.email || "?").trim().charAt(0).toUpperCase();
 
@@ -39,7 +43,7 @@ export async function SiteHeader() {
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 lg:grid lg:grid-cols-[1fr_auto_1fr]">
         <Logo className="justify-self-start" />
         <nav className="hidden items-center gap-8 text-sm font-medium text-foreground/70 lg:flex">
-          {MAIN_LINKS.map((l) => (
+          {navLinks.map((l) => (
             <Link key={l.href} href={l.href} className="hover:text-brand">
               {l.key ? <Tr k={l.key} /> : l.label}
             </Link>
