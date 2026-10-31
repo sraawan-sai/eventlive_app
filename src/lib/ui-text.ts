@@ -107,6 +107,13 @@ const en = {
   venueAddress: "Venue address",
   coverLabel: "Cover image URL (optional)",
   coverHint: "Paste a link to a photo, or leave empty to use the default illustration.",
+  // FAQ
+  faqPill: "FAQ",
+  faqTitle: "Questions people ask",
+  faqSub: "Quick answers about Eventra.",
+  stillQ: "Still have a question?",
+  seeAllFaq: "See all questions",
+  faqLink: "FAQ",
 } as const;
 
 export type UiKey = keyof typeof en;
@@ -209,6 +216,12 @@ const te: Record<UiKey, string> = {
   venueAddress: "వేదిక చిరునామా",
   coverLabel: "కవర్ చిత్రం లింక్ (ఐచ్ఛికం)",
   coverHint: "ఫోటో లింక్ ఇవ్వండి, లేదా డిఫాల్ట్ చిత్రం కోసం ఖాళీగా ఉంచండి.",
+  faqPill: "తరచూ అడిగే ప్రశ్నలు",
+  faqTitle: "అందరూ అడిగే ప్రశ్నలు",
+  faqSub: "Eventra గురించి త్వరిత సమాధానాలు.",
+  stillQ: "ఇంకా ప్రశ్న ఉందా?",
+  seeAllFaq: "అన్ని ప్రశ్నలు చూడండి",
+  faqLink: "తరచూ ప్రశ్నలు",
 };
 
 const hi: Record<UiKey, string> = {
@@ -309,6 +322,12 @@ const hi: Record<UiKey, string> = {
   venueAddress: "स्थान का पता",
   coverLabel: "कवर इमेज लिंक (वैकल्पिक)",
   coverHint: "फ़ोटो का लिंक डालें, या डिफ़ॉल्ट चित्र के लिए खाली छोड़ें।",
+  faqPill: "अक्सर पूछे जाने वाले प्रश्न",
+  faqTitle: "लोग अक्सर क्या पूछते हैं",
+  faqSub: "Eventra के बारे में त्वरित जवाब।",
+  stillQ: "अभी भी कोई सवाल है?",
+  seeAllFaq: "सभी प्रश्न देखें",
+  faqLink: "सवाल-जवाब",
 };
 
 export const UI: Record<Lang, Record<UiKey, string>> = { en, te, hi };

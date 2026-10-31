@@ -3,6 +3,8 @@ import { ButtonLink } from "@/components/ui";
 import { HomeHero } from "@/components/home-hero";
 import { HowItWorks } from "@/components/how-it-works";
 import { Lbl, Tr } from "@/components/tr";
+import { FaqList } from "@/components/faq-list";
+import Link from "next/link";
 import { EVENT_TYPES, EVENT_TYPE_CONFIG } from "@/lib/event-types";
 import { CategoryCarousel, type Category } from "@/components/category-carousel";
 import { TEMPLATE_LIST } from "@/lib/templates";
@@ -75,8 +77,38 @@ export default function Home() {
             ))}
           </div>
         </section>
+        <section id="faq" className="bg-slate-50 px-4 py-16 sm:py-20">
+          <div className="mx-auto max-w-3xl">
+            <div className="text-center">
+              <p className="inline-block rounded-full bg-white px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-brand ring-1 ring-brand/20">
+                <Tr k="faqPill" />
+              </p>
+              <h2 className="mt-4 font-serif text-3xl font-bold sm:text-4xl">
+                <Tr k="faqTitle" />
+              </h2>
+              <p className="mt-3 text-foreground/60">
+                <Tr k="faqSub" />
+              </p>
+            </div>
+            <div className="mt-8">
+              <FaqList limit={6} />
+            </div>
+            <p className="mt-6 text-center">
+              <Link href="/faq" className="font-semibold text-brand hover:underline">
+                <Tr k="seeAllFaq" /> →
+              </Link>
+            </p>
+          </div>
+        </section>
       </main>
-      <footer className="border-t border-black/5 py-6 text-center text-sm text-foreground/50">© Eventra</footer>
+      <footer className="border-t border-black/5 py-6 text-center text-sm text-foreground/50">
+        <nav className="mb-2 flex justify-center gap-6">
+          <Link href="/faq" className="hover:text-brand"><Tr k="faqLink" /></Link>
+          <Link href="/pricing" className="hover:text-brand"><Tr k="navPricing" /></Link>
+          <Link href="/demo" className="hover:text-brand"><Tr k="navDemo" /></Link>
+        </nav>
+        © Eventra
+      </footer>
     </>
   );
 }
