@@ -106,6 +106,7 @@ export default function Home() {
           <Link href="/faq" className="hover:text-brand"><Tr k="faqLink" /></Link>
           <Link href="/pricing" className="hover:text-brand"><Tr k="navPricing" /></Link>
           <Link href="/demo" className="hover:text-brand"><Tr k="navDemo" /></Link>
+          <Link href="/terms" className="hover:text-brand"><Tr k="termsLink" /></Link>
         </nav>
         © Eventra
       </footer>

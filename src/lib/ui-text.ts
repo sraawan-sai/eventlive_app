@@ -114,6 +114,21 @@ const en = {
   stillQ: "Still have a question?",
   seeAllFaq: "See all questions",
   faqLink: "FAQ",
+  // terms
+  termsPill: "Legal",
+  termsTitle: "Terms and Conditions",
+  termsUpdated: "Last updated",
+  termsKeyTitle: "Key points in short",
+  termsOfficial: "This short summary helps you read faster. The full English terms below are the official version.",
+  termsK1: "Eventra helps you make an event website and go live. Free and paid packages have limits on viewers, live time and storage.",
+  termsK2: "Prices are per event, before 18% GST. You pay by UPI after messaging us on WhatsApp, and we switch on your package.",
+  termsK3: "You own your photos and videos. You must have the right to use them, including any music.",
+  termsK4: "You are responsible for what you stream, and for getting permission from people who appear in it.",
+  termsK5: "We do not record your live stream. You can delete your account and files at any time.",
+  termsK6: "Payments are not refunded once a package is switched on, unless we cannot provide the service. Contact us before your event if there is a problem.",
+  termsLink: "Terms",
+  termsAgreeA: "By creating an account you agree to our ",
+  termsAgreeB: ".",
 } as const;
 
 export type UiKey = keyof typeof en;
@@ -222,6 +237,20 @@ const te: Record<UiKey, string> = {
   stillQ: "ఇంకా ప్రశ్న ఉందా?",
   seeAllFaq: "అన్ని ప్రశ్నలు చూడండి",
   faqLink: "తరచూ ప్రశ్నలు",
+  termsPill: "చట్టపరమైన",
+  termsTitle: "నిబంధనలు మరియు షరతులు",
+  termsUpdated: "చివరిగా నవీకరించబడింది",
+  termsKeyTitle: "ముఖ్యాంశాలు క్లుప్తంగా",
+  termsOfficial: "ఇది త్వరగా చదవడానికి చిన్న సారాంశం. కింద ఉన్న పూర్తి ఇంగ్లీష్ నిబంధనలే అధికారిక వెర్షన్.",
+  termsK1: "Eventra తో మీరు ఈవెంట్ వెబ్‌సైట్ చేసి లైవ్‌కి వెళ్లవచ్చు. ఉచిత మరియు చెల్లింపు ప్యాకేజీలకు వీక్షకులు, లైవ్ సమయం, స్థలంపై పరిమితులు ఉంటాయి.",
+  termsK2: "ధరలు ఒక్కో ఈవెంట్‌కు, 18% GST కాకుండా. WhatsApp లో మాకు సందేశం పంపాక UPI తో చెల్లిస్తారు, మేము మీ ప్యాకేజీని ఆన్ చేస్తాము.",
+  termsK3: "మీ ఫోటోలు, వీడియోలు మీవే. సంగీతంతో సహా వాటిని వాడే హక్కు మీకు ఉండాలి.",
+  termsK4: "మీరు ప్రసారం చేసే వాటికి మీరే బాధ్యులు, అందులో కనిపించే వ్యక్తుల అనుమతి తీసుకోవాలి.",
+  termsK5: "మేము మీ లైవ్ స్ట్రీమ్‌ను రికార్డ్ చేయము. మీ ఖాతా, ఫైళ్లను ఎప్పుడైనా తొలగించవచ్చు.",
+  termsK6: "ప్యాకేజీ ఆన్ అయ్యాక చెల్లింపులు వాపసు ఇవ్వబడవు, మేము సేవ అందించలేకపోతే తప్ప. సమస్య ఉంటే మీ ఈవెంట్‌కు ముందే మమ్మల్ని సంప్రదించండి.",
+  termsLink: "నిబంధనలు",
+  termsAgreeA: "ఖాతా సృష్టించడం ద్వారా మీరు మా ",
+  termsAgreeB: " కు అంగీకరిస్తున్నారు.",
 };
 
 const hi: Record<UiKey, string> = {
@@ -328,6 +357,20 @@ const hi: Record<UiKey, string> = {
   stillQ: "अभी भी कोई सवाल है?",
   seeAllFaq: "सभी प्रश्न देखें",
   faqLink: "सवाल-जवाब",
+  termsPill: "कानूनी",
+  termsTitle: "नियम और शर्तें",
+  termsUpdated: "अंतिम अपडेट",
+  termsKeyTitle: "मुख्य बातें संक्षेप में",
+  termsOfficial: "यह छोटा सारांश जल्दी पढ़ने के लिए है। नीचे दिए गए पूरे अंग्रेज़ी नियम ही आधिकारिक संस्करण हैं।",
+  termsK1: "Eventra से आप इवेंट वेबसाइट बनाकर लाइव जा सकते हैं। मुफ़्त और सशुल्क पैकेज में दर्शकों, लाइव समय और जगह की सीमाएँ होती हैं।",
+  termsK2: "कीमतें प्रति इवेंट हैं, 18% GST अलग। WhatsApp पर संदेश भेजने के बाद आप UPI से भुगतान करते हैं और हम आपका पैकेज चालू करते हैं।",
+  termsK3: "आपकी फ़ोटो और वीडियो आपके ही हैं। संगीत सहित उन्हें इस्तेमाल करने का अधिकार आपके पास होना चाहिए।",
+  termsK4: "आप जो स्ट्रीम करते हैं उसकी ज़िम्मेदारी आपकी है, और उसमें दिखने वाले लोगों से अनुमति लेना भी।",
+  termsK5: "हम आपकी लाइव स्ट्रीम रिकॉर्ड नहीं करते। आप अपना खाता और फ़ाइलें कभी भी हटा सकते हैं।",
+  termsK6: "पैकेज चालू होने के बाद भुगतान वापस नहीं होता, सिवाय इसके कि हम सेवा न दे सकें। कोई समस्या हो तो अपने इवेंट से पहले हमसे संपर्क करें।",
+  termsLink: "नियम और शर्तें",
+  termsAgreeA: "खाता बनाकर आप हमारे ",
+  termsAgreeB: " से सहमत होते हैं।",
 };
 
 export const UI: Record<Lang, Record<UiKey, string>> = { en, te, hi };

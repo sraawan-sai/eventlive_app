@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useActionState, type ReactNode } from "react";
 import type { FormState } from "@/lib/actions/auth";
 import { Button, Card, Field, inputCls } from "@/components/ui";
+import { useLang } from "@/components/event/lang";
 import { Logo } from "@/components/logo";
 
 export function AuthForm({
@@ -19,6 +20,7 @@ export function AuthForm({
   /** Optional panel shown beside the form on large screens (below it on phones). */
   aside?: ReactNode;
 }) {
+  const { ui } = useLang();
   const [state, formAction, pending] = useActionState(action, {});
   const fe = state.fieldErrors ?? {};
   const isLogin = mode === "login";
@@ -78,6 +80,15 @@ export function AuthForm({
           <Button type="submit" disabled={pending} className="w-full">
             {pending ? "Please wait…" : isLogin ? "Sign In" : "Create account"}
           </Button>
+          {!isLogin && (
+            <p className="text-center text-xs text-foreground/60">
+              {ui("termsAgreeA")}
+              <Link href="/terms" className="font-semibold text-brand hover:underline">
+                {ui("termsTitle")}
+              </Link>
+              {ui("termsAgreeB")}
+            </p>
+          )}
         </form>
         <p className="mt-5 text-center text-sm text-foreground/60">
           {isLogin ? "Don't have an account? " : "Already have an account? "}
